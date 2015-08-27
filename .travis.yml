@@ -11,6 +11,6 @@ install:
 
 script:
    - echo localhost > inventory
-   - ansible-playbook --syntax-check roles/datomic/tests/role.yml
+   - ansible-playbook --syntax-check roles/datomic/tests/test.yml
 #   - ansible-playbook -i inventory --syntax-check role.yml
 #   - ansible-playbook -i inventory --connection=local --sudo -vvvv role.yml
