@@ -6,4 +6,9 @@ os:
 language: python
 python: "2.7"
 
+install:
+   - pip install ansible
 
+script:
+   - ansible-playbook -i playbook/roles/datomic/tests/inventory playbook/roles/datomic/tests/test.yml --syntax-check
+ 
