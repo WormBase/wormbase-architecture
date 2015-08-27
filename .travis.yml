@@ -10,5 +10,7 @@ install:
    - pip install ansible
 
 script:
-   - ansible-playbook -i playbook/roles/datomic/tests/inventory playbook/roles/datomic/tests/test.yml --syntax-check
- 
+   - echo localhost > inventory
+   - ansible-playbook --syntax-check tests/role.yml
+#   - ansible-playbook -i inventory --syntax-check role.yml
+#   - ansible-playbook -i inventory --connection=local --sudo -vvvv role.yml
