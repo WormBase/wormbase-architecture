@@ -5,7 +5,7 @@ MAINTAINER Adam Wright "adamwright@wormbase.org"
 ENV DATOMIC_VERSION 0.9.5206
 ENV DATOMIC_HOME /root/datomic/datomic
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
-ENV PATH $JAVA_HOME:/bin:/usr/bin:$PATHTH $JAVA_HOME:/bin:/usr/bin:$PATH
+ENV PATH $JAVA_HOME:/bin:/usr/bin:$PATH $JAVA_HOME:/bin:/usr/bin:$PATH
 
 ## update packages
 RUN \

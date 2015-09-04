@@ -3,3 +3,4 @@
   sudo: True
   roles:
   - datomic
+  - datomic-api

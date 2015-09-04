@@ -1,0 +1,32 @@
+---
+# file: datomic/tasks/main.yml
+# This script is for launching the datomic docker container
+
+- name: create acedb directory
+  file: path=/datastore/acedb state=directory mode=0775
+
+- name: create acedb archive directory
+  file: path=/datastore/acedb/archive state=directory mode=0775
+
+
+## Setting up host machine
+
+- name: creating datomic API image
+  docker_image: >
+   name=wormbase-datomic-api
+   tag=latest
+   path="./roles/datomic-api/files"
+   state=build
+
+# docker run -d -p 4334:4334 wormbase-datomic:latest
+
+#- name: running datomic API container
+#  docker:
+#   name: wormbase-datomic-api
+#   image: wormbase-datomic-api:latest
+#   state: started
+#   ports: "8210:8210" 
+#   expose: 
+#      - 8210
+#   volumes:
+#      - "/datastore/acedb/archive/:.datastore/acedb/archive:rw"
