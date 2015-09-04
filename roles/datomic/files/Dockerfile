@@ -1,28 +1,61 @@
-FROM pointslope/clojure:lein-2.5.0
+FROM ubuntu:14.04
 
 MAINTAINER Adam Wright "adamwright@wormbase.org"
 
-ENV DATOMIC_VERSION 0.9.5130
-ENV DATOMIC_HOME /opt/datomic-pro-$DATOMIC_VERSION
+ENV DATOMIC_VERSION 0.9.5206
+ENV DATOMIC_HOME /root/datomic/datomic
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV PATH $JAVA_HOME:/bin:/usr/bin:$PATHTH $JAVA_HOME:/bin:/usr/bin:$PATH
 
-# Datomic Pro Starter as easy as 1-2-3
-# 1. Create a .credentials file containing user:pass
-# for downloading from my.datomic.com
-ONBUILD ADD .credentials /tmp/.credentials
+## update packages
+RUN \
+  sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
+  apt-get update && \
+  apt-get -y upgrade && \
+  apt-get install -y build-essential && \
+  apt-get install -y software-properties-common && \
+  apt-get install -y unzip wget && \
+  apt-get install -y openjdk-7-jdk && \
+  rm -rf /var/lib/apt/lists/*
 
-# 2. Make sure to have a config/ folder in the same folder as your
+# Set environment variables.
+ENV HOME /root
+
+# Define working directory.
+WORKDIR /data
+
+# Define default command.
+CMD ["bash"]
+
+# Setup Datomic
+
+## move datomic into container
+ADD ./datomic-free-0.9.5206.zip /tmp/datomic-free-0.9.5206.zip
+
+## make datomic directories
+RUN mkdir ~/temp
+RUN mkdir ~/datomic
+RUN mkdir ~/datomic_data
+RUN mkdir ~/datomic_configs
+
+## Make sure to have a config/ folder in the same folder as your
 # Dockerfile containing the transactor property file you wish to use
-ONBUILD RUN curl datomic-free-0.9.5206.zip\
-  && unzip /tmp/datomic.zip -d /opt \
-  && rm -f /tmp/datomic.zip
+RUN unzip /tmp/datomic-free-0.9.5206.zip -d ~/temp
 
-WORKDIR $DATOMIC_HOME
+RUN cp -r ~/temp/datomic-free-0.9.5206/* ~/datomic
+RUN rm -r ~/temp
 
-# 3. Provide a CMD with an alias to the database
-# and the database uri
-# e.g. CMD ["dev", "datomic:dev://db:4334/"]
-ENTRYPOINT ["bin/console", "-p", "9000"]
+#-- IMPORT transactor file from vagrant HOST into container
+ADD configs/free-transactor.properties /root/datomic_configs/free-transactor.properties
 
-EXPOSE 9000
+#-- RUN DATOMIC
+# copy default transactor into datomic root
+RUN cp ~/datomic/config/samples/free-transactor-template.properties ~/datomic/free-transactor.properties
 
+# modify url in transactor file
+RUN sed "s/host=localhost/host=0.0.0.0/" -i ~/datomic/free-transactor.properties
 
+# -- execute free transactor with updated settings
+CMD ["/root/datomic/bin/transactor", "/root/datomic/free-transactor.properties"]
+
+EXPOSE 4334

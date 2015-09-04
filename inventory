@@ -1,0 +1,4 @@
+[targets]
+
+localhost	ansible_connection=local
+datomic	ansible_sible_connection=local

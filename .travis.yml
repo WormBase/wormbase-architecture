@@ -6,11 +6,16 @@ os:
 language: python
 python: "2.7"
 
+env:
+  - ANSIBLE_VERSION=1.8
+  - ANSIBLE_VERSION=1.9.2
+
+
 install:
-   - pip install ansible
+   - sudo pip install ansible==$ANSIBLE_VERSION
 
 script:
-   - echo localhost > inventory
+   - ansible --version
    - ansible-playbook -i inventory --syntax-check roles/datomic/tests/test.yml
 #   - ansible-playbook -i inventory --syntax-check role.yml
 #   - ansible-playbook -i inventory --connection=local --sudo -vvvv role.yml

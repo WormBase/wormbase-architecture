@@ -1,0 +1,8 @@
+--- 
+# file: install.yml
+# This file is used to install the host
+
+- hosts: localhost
+  sudo: True
+  roles:
+    - host
