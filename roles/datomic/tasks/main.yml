@@ -34,9 +34,14 @@
     name: wormbase-datomic
     image: wormbase-datomic:latest
     state: started
-    ports: "4334:4334"
+    ports: 
+      - "4334:4334"
+      - "4335:4335"
+      - "4336:4336"
     expose: 
       - 4334
+      - 4335
+      - 4336
     volumes:
       - '/datastore/datomic/data:/root/datomic_data:rw'
-      - '/datastore/datomic/config:/root/datomic_config:rw'
+      - '/datastore/datomic/config:/root/datomic_configs:rw'

@@ -18,15 +18,15 @@
    path="./roles/datomic-api/files"
    state=build
 
-# docker run -d -p 4334:4334 wormbase-datomic:latest
-
-#- name: running datomic API container
-#  docker:
-#   name: wormbase-datomic-api
-#   image: wormbase-datomic-api:latest
-#   state: started
-#   ports: "8210:8210" 
-#   expose: 
-#      - 8210
-#   volumes:
-#      - "/datastore/acedb/archive/:.datastore/acedb/archive:rw"
+- name: running datomic API container
+  docker:
+   name: wormbase-datomic-api
+   image: wormbase-datomic-api:latest
+   state: started
+   command: /bin/bash
+   links: wormbase-datomic:wormbase-datomic
+   ports: "8210:8210" 
+   expose: 
+      - 8210
+   volumes:
+      - "/datastore/acedb/archive/:datastore/acedb/archive:rw"

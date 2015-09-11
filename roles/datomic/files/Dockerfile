@@ -16,6 +16,7 @@ RUN \
   apt-get install -y software-properties-common && \
   apt-get install -y unzip wget && \
   apt-get install -y openjdk-7-jdk && \
+  apt-get install -y vim && \
   rm -rf /var/lib/apt/lists/*
 
 # Set environment variables.
@@ -54,6 +55,7 @@ RUN cp ~/datomic/config/samples/free-transactor-template.properties ~/datomic/fr
 
 # modify url in transactor file
 RUN sed "s/host=localhost/host=0.0.0.0/" -i ~/datomic/free-transactor.properties
+RUN sed "/host=0.0.0.0/a alt-host=private-ip/" -i ~/datomic/free-transactor.properties
 
 # -- execute free transactor with updated settings
 CMD ["/root/datomic/bin/transactor", "/root/datomic/free-transactor.properties"]
