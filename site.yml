@@ -2,5 +2,6 @@
 - hosts: localhost
   sudo: True
   roles:
-  - datomic-api
-  - datomic
+   - postgresql
+#  - datomic-api
+#  - datomic

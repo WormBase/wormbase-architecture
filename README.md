@@ -40,6 +40,12 @@ First you will need to install docker and other dependencies on your host machin
 
 	
 
+###Database (posgresql)
+
+The data is stored in /var/log/postresql/data
+
+To log in you can type psql -U postgres -h <postgres-container-ip-addr>  
+
 ###Datomic
 
 Datomic will already be running you will be able to connect with it either through port 4334 or through ssh
