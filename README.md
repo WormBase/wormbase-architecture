@@ -42,9 +42,17 @@ First you will need to install docker and other dependencies on your host machin
 
 ###Database (posgresql)
 
-The data is stored in /var/log/postresql/data
+This database could be used in stead of the free storage protocol with Datomic
 
-To log in you can type psql -U postgres -h <postgres-container-ip-addr>  
+Data is stored in /var/log/postresql/data.
+
+####Log in from remote host
+
+     psql -U postgres -h <postgres-container-ip-addr>  
+
+####Start Container
+
+     ansible-playbook -i inventory postgresql.yml;
 
 ###Datomic
 

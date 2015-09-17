@@ -4,7 +4,7 @@
 
 
 ## Setting up host machine
-##
+
 #- name: create datastore folder
 #  file: path=/datastore state=directory mode=0775
 #
@@ -19,25 +19,29 @@
 #
 #- name: copy config files
 #  copy: src=./configs/free-transactor.properties dest=/datastore/datomic/configs/
-#
-#- name: creating postgresql image
-#  docker_image: >
-#    name=wormbase-postgresql9-4
-#    tag=latest
-#    path="./roles/postgresql/files"
-#    state=build
 
-- name: running postgresql container
-  docker:
-    name: wormbase-database
-    image: postgres:9.4
-    detach: true 
-    env: 
-      POSTGRES_PASSWORD: "password"
-    state: started
-    ports: 
-      - "5432:5432"
-    expose: 
-      - 5432
-    volumes:
-      - '/var/log/postgresql/data:/var/log/postgresql/data:rw'
+- name: creating website image
+  docker_image: >
+    name=wormbase-website
+    tag=latest
+    path="./roles/website/files"
+    state=build
+
+# docker run -d -p 4334:4334 wormbase-datomic:latest
+
+#- name: running datomic container
+#  docker:
+#    name: wormbase-datomic
+#    image: wormbase-datomic:latest
+#    state: started
+#    ports: 
+#      - "4334:4334"
+#      - "4335:4335"
+#      - "4336:4336"
+#    expose: 
+#      - 4334
+#      - 4335
+#      - 4336
+#    volumes:
+#      - '/datastore/datomic/data:/root/datomic_data:rw'
+#      - '/datastore/datomic/config:/root/datomic_configs:rw'

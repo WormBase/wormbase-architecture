@@ -16,6 +16,7 @@ RUN \
   apt-get install -y software-properties-common && \
   apt-get install -y unzip wget && \
   apt-get install -y openjdk-7-jdk && \
+  apt-get install -y maven && \
   apt-get install -y vim && \
   rm -rf /var/lib/apt/lists/*
 
@@ -35,7 +36,6 @@ ADD ./datomic-free-0.9.5206.zip /tmp/datomic-free-0.9.5206.zip
 
 ## make datomic directories
 RUN mkdir ~/temp
-RUN mkdir ~/datomic
 RUN mkdir ~/datomic_data
 RUN mkdir ~/datomic_configs
 
@@ -45,6 +45,10 @@ RUN unzip /tmp/datomic-free-0.9.5206.zip -d ~/temp
 
 RUN cp -r ~/temp/datomic-free-0.9.5206/* ~/datomic
 RUN rm -r ~/temp
+
+# Install Datomic
+RUN cd ~/datomic && \
+    mvn install
 
 #-- IMPORT transactor file from vagrant HOST into container
 ADD configs/free-transactor.properties /root/datomic_configs/free-transactor.properties
