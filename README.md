@@ -9,7 +9,10 @@ The main provisioning tool that is used in the repostitory is Ansible.
 
 First you will need to install docker and other dependencies on your host machine
 
+### specifying devices
 
+	lsblk -o KNAME,TYPE,SIZE,MODEL
+        add desired device to roles/host/tasks/main.yml
 
 
 ###Command 1

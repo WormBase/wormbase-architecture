@@ -1,3 +1,6 @@
+- name: Mount datastore device 
+  mount: name=/datastore src=/dev/xvdf fstype=xfs opts= state=present
+
 - name: adding Docker yum repository
   yum: name=http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm state=present
   when: ansible_os_family =="RedHat"
