@@ -1,0 +1,41 @@
+---
+# file: mysql/tasks/main.yml
+# This script is for launching the mysql docker container
+
+
+## Setting up host machine
+
+- name: create datastore folder
+  file: path=/datastore state=directory mode=0775
+
+- name: create MySQL datastore directory
+  file: path=/datastore/mysql state=directory mode=0775
+
+- name: create Datamic data directory
+  file: path=/datastore/mysql/data state=directory mode=0775
+
+- name: creating mysql image
+  docker_image: >
+    name=wormbase-mysql
+    tag=latest
+    path="./roles/mysql/files"
+    state=build
+
+# docker run -d -p 4334:4334 wormbase-datomic:latest
+
+#- name: running datomic container
+#  docker:
+#    name: wormbase-datomic
+#    image: wormbase-datomic:latest
+#    state: started
+#    ports: 
+#      - "4334:4334"
+#      - "4335:4335"
+#      - "4336:4336"
+#    expose: 
+#      - 4334
+#      - 4335
+#      - 4336
+#    volumes:
+#      - '/datastore/datomic/data:/root/datomic_data:rw'
+#      - '/datastore/datomic/config:/root/datomic_configs:rw'

@@ -9,11 +9,12 @@ The main provisioning tool that is used in the repostitory is Ansible.
 
 First you will need to install docker and other dependencies on your host machine
 
-### specifying devices
+### mount devices
+        Follow instruction from http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
+        eg. sudo mkfs -t xfs /dev/xvdf; sudo mount /dev/xvdf /datastore;
 
-	lsblk -o KNAME,TYPE,SIZE,MODEL
-        add desired device to roles/host/tasks/main.yml
-
+### start datomic transactor
+	sudo ~/datomic/bin/transactor ~/datomic_configs/free-transactor.properties
 
 ###Command 1
 	ansible-playbook -i inventory install.yml
@@ -23,6 +24,14 @@ First you will need to install docker and other dependencies on your host machin
 
 ###Result 
 	When you run "sudo docker images" you should now see the image "wormbase-datomic" listed as a docker image
+
+
+##Loading data into acedb
+        foreach acefile (`ls /datastore/acedb/raw-data/WS250/*.ace`)
+            tace <<quit
+                parse $acefile
+            quit
+        end
 
 
 ## Using Containers
