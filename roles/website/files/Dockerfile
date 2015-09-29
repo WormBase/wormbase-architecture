@@ -19,38 +19,6 @@ RUN sudo apt-get update; \
       zlib1g-dev \
       uuid \
       uuid-dev 
-#     sharutils 
-#     gcc g++ \
-#     bzip2 \
-#     mysql-client \
-#     mysql-server \
-#     libgd2-xpm-dev\
-#     libgd2-xpm \
-#     xinetd \
-#     libdbd-mysql \
-#     libdbd-mysql-perl \
-#     libapache2-mod-perl2 \
-#     libgtk2.0-0 \
-#     libgtk2.0-dev \
-#     byacc \
-#     libreadline-gplv2-dev \
-#     flex \
-#     libdb4.6 \
-#     libdb-dev \
-#     xml2 libxml2 libxml2-dev \
-#     libmysql++-dev \
-#     ncurses-bin \
-#     libxmu-dev \
-#     graphviz \
-#     libssl-dev \
-
-#     uuid-dev \
-#     libxslt1-dev \
-#     xsltproc \
-#     libgdbm3 \
-#     libgdbm3-dev \
-#     libstdc++ \
-#     libstdc++-devel 
 
 #Adding user
 RUN groupadd wormbase

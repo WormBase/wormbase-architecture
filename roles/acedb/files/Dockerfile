@@ -32,17 +32,14 @@ RUN cd /usr/local; \
 RUN mkdir -p /root/acedb;
 
 
-RUN mkdir -p /root/acedb/wormbase;
-RUN mkdir -p /root/acedb/wormbase/database;
-RUN mkdir -p /root/acedb/wormbase/wspec;
-
-RUN touch /root/acedb/wormbase/wspec/models.wrm
-
+#RUN mkdir -p /root/acedb/wormbase;
+#RUN mkdir -p /root/acedb/wormbase/database;
+#RUN mkdir -p /root/acedb/wormbase/wspec;
 
 ##Installing acedb
 RUN apt-get update && \
     apt-get install -y libgtk2.0-0 libgtk2.0-dev libglib2.0-dev byacc csh \
-sharutils \
+     sharutils \
      gcc g++ \
      curl wget \
      bzip2 \
@@ -75,14 +72,6 @@ sharutils \
      libgdbm3 \
      ncurses-dev
 
-#     libstdc++ 
-
-#     libstdc++-devel  
-
-#     libgd2-xpm \
-#     libgdbm3-dev \
-
-
 COPY ACEDB-source.4.9.39.tar.gz /root/acedb/ACEDB-source.4.9.39.tar.gz
 
 CMD chmod 777 /root/acedb/ACEDB-source.4.9.39.tar.gz
@@ -107,17 +96,10 @@ RUN cd ~/acedb; \
     sudo chown root:root ~/acedb/bin/*
 
 #test ace
-run  ~/acedb/bin/sgifaceserver ~/acedb/wormbase; sdfs
-
-#    ln -s bin- \
-#    cd 
-
+#CMD ["/root/acedb/bin/sgifaceserver", "/datastore/acedb/data/WS250", "5000"]; 
 
 # Set environment variables.
 ENV HOME /root
 
 # Define working directory.
 WORKDIR /root
-
-# Define default command.
-CMD ["bash"]
