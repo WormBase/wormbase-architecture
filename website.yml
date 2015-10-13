@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  sudo: True
+  roles:
+    - website
