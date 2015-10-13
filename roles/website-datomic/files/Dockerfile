@@ -59,6 +59,7 @@ RUN wget http://oligarchy.co.uk/xapian/1.2.5/xapian-core-1.2.5.tar.gz; \
 #install website
 RUN cd  /usr/local/wormbase/website; \
     git clone https://github.com/dasmoth/website.git; \
+    git checkout origin/json-client; \ 
     mv website develop
 
 #install website dependencies
