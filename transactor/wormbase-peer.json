@@ -1,0 +1,6 @@
+{"Statement":
+[{"Effect":"Allow",
+  "Action":
+  ["dynamodb:GetItem", "dynamodb:BatchGetItem", "dynamodb:Scan",
+   "dynamodb:Query"],
+  "Resource":"arn:aws:dynamodb:*:357210185381:table/wormbase"}]}
