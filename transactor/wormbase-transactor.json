@@ -1,0 +1,4 @@
+{"Statement":
+[{"Effect":"Allow",
+  "Action":["dynamodb:*"],
+  "Resource":"arn:aws:dynamodb:*:357210185381:table/wormbase"}]}
