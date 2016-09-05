@@ -254,7 +254,8 @@
             "DeviceName": "/dev/sdb",
             "VirtualName": "ephemeral0"
           }
-        ]
+        ],
+	"KeyName": "datomic-peer-development"
       }
     }
   },
