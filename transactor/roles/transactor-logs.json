@@ -1,0 +1,14 @@
+{
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::transactor-logs",
+        "arn:aws:s3:::transactor-logs/*"
+      ]
+    }
+  ]
+}
