@@ -224,7 +224,17 @@
                 "aws-cloudwatch-dimension-value=wormbase-datomic-transactors",
                 "aws-cloudwatch-region=us-east-1",
                 "aws-dynamodb-region=us-east-1",
-                "aws-dynamodb-table=WS255",
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "aws-dynamodb-table",
+                      {
+                        "Ref": "WormbaseDataVersion"
+                      }
+                    ]
+                  ]
+                },
                 "aws-peer-role=datomic-aws-peer",
                 "aws-s3-log-bucket-id=transactor-logs",
                 "aws-transactor-role=datomic-aws-transactor",
@@ -443,6 +453,13 @@
     "DatomicVersion": {
       "Type": "String",
       "Default": "0.9.5385"
+    },
+    "WormbaseDataVersion": {
+	"Type": "String",
+	"AllowedPattern": "WS\\d{3,}",
+	"ConstraintDescription": "Parameter must have a prefix of \"WS\"",
+	"Description": "Wormbase Data release version, used as DynamoDB table name",
+	"MinLength": 5
     }
   },
   "Description": "Datomic Transactor Template"
