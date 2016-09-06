@@ -225,7 +225,7 @@
 		"memory-index-threshold=32m",
 		"aws-cloudwatch-dimension-value=wormbase-datomic-transactors",
 		"object-cache-max=1g",
-		"license-key=`/home/ec2-user/datomic-pro/wormbase-license-key`",
+		"license-key=`cat /home/ec2-user/datomic-pro/wormbase-license-key`",
 		"aws-dynamodb-table=WS255",
 		"encrypt-channel=false",
 		"EOF",
