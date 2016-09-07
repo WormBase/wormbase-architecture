@@ -153,7 +153,6 @@
               "\n",
               [
                 "yum install -y curl",
-                "curl https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh -o ./startup.sh",
                 {
                   "Fn::Join": [
                     "",
@@ -255,6 +254,8 @@
                 },
                 "encrypt-channel=false",
                 "EOF",
+		"echo \"Working directory is: $(pwd)\"",
+		"curl https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh -o ./startup.sh",
                 "chmod 744 aws.properties",
                 "chmod 500 startup.sh",
                 "./startup.sh"
