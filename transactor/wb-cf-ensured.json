@@ -465,7 +465,7 @@
     },
     "DatomicLicenseKey": {
       "Type": "String",
-      "Decription": "Wormbase's datomic-pro license key"
+      "Description": "Wormbase's datomic-pro license key"
     },
     "WormbaseDataVersion": {
       "Type": "String",
