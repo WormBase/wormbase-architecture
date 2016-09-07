@@ -24,6 +24,7 @@ cd ${DATOMIC_DEPLOY_DIR}
 
 echo "Running transactor with params:"
 echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties"
+aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/
 
 daemon --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
 sleep 200
@@ -34,7 +35,6 @@ if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
     while kill -0 $PID > /dev/null; do sleep 1; done
     echo "copying to s3"
     aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console.log s3://transactor-logs/
-    aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/
     tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console.log > /dev/console
     shutdown -h now
 fi
