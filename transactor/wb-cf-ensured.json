@@ -256,7 +256,6 @@
                 "encrypt-channel=false",
                 "EOF",
                 "chmod 744 aws.properties",
-                "AWS_ACCESS_KEY_ID=\"${DATOMIC_READ_DEPLOY_ACCESS_KEY_ID}\" AWS_SECRET_ACCESS_KEY=\"${DATOMIC_READ_DEPLOY_AWS_SECRET_KEY}\" aws s3 cp \"s3://${DATOMIC_DEPLOY_BUCKET}/${DATOMIC_VERSION}/startup.sh\" startup.sh",
                 "chmod 500 startup.sh",
                 "./startup.sh"
               ]
