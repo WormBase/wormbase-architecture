@@ -36,5 +36,6 @@ if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
     echo "copying to s3"
     aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console.log s3://transactor-logs/
     tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console.log > /dev/console
+    sleep 20
     shutdown -h now
 fi
