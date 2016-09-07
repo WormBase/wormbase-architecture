@@ -29,7 +29,7 @@ daemon --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JA
 sleep 200
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
 echo "pid is $PID"
-echo "DATOMIC_DISABLE_SHUTDOWN is \"${DATOMIC_DISABLE_SHUTDOWN}\"
+echo "DATOMIC_DISABLE_SHUTDOWN is \"${DATOMIC_DISABLE_SHUTDOWN}\""
 if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
     while kill -0 $PID > /dev/null; do sleep 1; done
     echo "copying to s3"
