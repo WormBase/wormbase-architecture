@@ -242,17 +242,17 @@
                 "memory-index-max=512m",
                 "memory-index-threshold=32m",
                 "object-cache-max=1g",
-		{
-		    "Fn::Join": [
-			"=",
-			[
-			    "license-key",
-			    {
-				"Ref": "DatomicLicenseKey"
-			    }
-			]
-		    ]
-		},
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "license-key",
+                      {
+                        "Ref": "DatomicLicenseKey"
+                      }
+                    ]
+                  ]
+                },
                 "encrypt-channel=false",
                 "EOF",
                 "chmod 744 aws.properties",
@@ -465,15 +465,15 @@
       "Default": "0.9.5385"
     },
     "DatomicLicenseKey": {
-	"Type": "String",
-	"Decription": "Wormbase's datomic-pro license key"
+      "Type": "String",
+      "Decription": "Wormbase's datomic-pro license key"
     },
     "WormbaseDataVersion": {
-	"Type": "String",
-	"AllowedPattern": "WS\\d{3,}",
-	"ConstraintDescription": "Parameter must have a prefix of \"WS\"",
-	"Description": "Wormbase Data release version, used as DynamoDB table name",
-	"MinLength": 5
+      "Type": "String",
+      "AllowedPattern": "WS\\d{3,}",
+      "ConstraintDescription": "Parameter must have a prefix of \"WS\"",
+      "Description": "Wormbase Data release version, used as DynamoDB table name",
+      "MinLength": 5
     }
   },
   "Description": "Datomic Transactor Template"
