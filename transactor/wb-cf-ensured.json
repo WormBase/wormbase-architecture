@@ -152,8 +152,8 @@
             "Fn::Join": [
               "\n",
               [
-                "#!/bin/bash -xe",
-                "yum update -y aws-cfn-bootstrap",
+                "yum install -y curl",
+                "curl https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh -o ./startup.sh",
                 {
                   "Fn::Join": [
                     "",
