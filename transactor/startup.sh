@@ -26,10 +26,10 @@ echo "Running transactor with params:"
 echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties"
 
 daemon --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
-sleep 20
+sleep 200
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
 echo "pid is $PID"
-echo "DATOMIC_DISABLE_SHUTDOWN is ${DATOMIC_DISABLE_SHUTDOWN}"
+echo "DATOMIC_DISABLE_SHUTDOWN is \"${DATOMIC_DISABLE_SHUTDOWN}\"
 if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
     while kill -0 $PID > /dev/null; do sleep 1; done
     echo "copying to s3"
