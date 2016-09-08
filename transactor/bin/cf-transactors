@@ -60,18 +60,26 @@ CF_PARAMS=( "ParameterKey=UserName,ParameterValue=${AWS_PROFILE}"\ \
 "ParameterKey=WormbaseDataVersion,ParameterValue=${WS_RELEASE}"\ \
 "ParameterKey=AutoScalingDesiredCapacity,ParameterValue=${DESIRED_CAPACITY}" )
 
+
+validation_errs_file="/tmp/$$.validation.errors"
+
 aws --profile "${AWS_PROFILE}" \
     cloudformation validate-template \
-    --template-body "file://${TEMPLATE_PATH}" 2> /tmp/$$.validation.errors
-if [ $? -ne 0 ];
+    --template-body "file://${TEMPLATE_PATH}" \
+    2>&1 "${validation_errs_file}"
+
+valid=$?
+validation_errs=`cat ${validation_errs_file}`
+rm "${validation_errs_file}"
+
+if [ $valid -ne 0 ];
 then
-    cat /tmp/$$.validation.errors
+    echo -e "${validation_errs_file}"
     exit 3
 fi
-rm -f /tmp/$$.validation.errors
 
 aws --profile "${AWS_PROFILE}" \
     cloudformation "${OP}-stack" \
     --stack-name "${STACK_NAME}" \
     --template-body "file://${TEMPLATE_PATH}" \
-    --parameters "${CF_PARAMS}"
+    --parameters ${CF_PARAMS}
