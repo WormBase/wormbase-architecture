@@ -58,7 +58,8 @@ CF_PARAMS=( "ParameterKey=UserName,ParameterValue=${AWS_PROFILE}"\ \
 "ParameterKey=DatomicVersion,ParameterValue=${DATOMIC_VERSION}"\ \
 "ParameterKey=DatomicLicenseKey,ParameterValue=${LICENSE_KEY_CONTENTS}"\ \
 "ParameterKey=WormbaseDataVersion,ParameterValue=${WS_RELEASE}"\ \
-"ParameterKey=AutoScalingDesiredCapacity,ParameterValue=${DESIRED_CAPACITY}" )
+"ParameterKey=AutoScalingDesiredCapacity,\
+ParameterValue=${DESIRED_CAPACITY}" )
 
 
 validation_errs_file="/tmp/$$.validation.errors"
