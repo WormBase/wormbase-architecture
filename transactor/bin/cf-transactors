@@ -13,7 +13,16 @@ DESIRED_CAPACITY="$4"
 
 WB_AWS="aws --profile=${AWS_PROFILE}"
 
-USAGE="$0 <AWS_PROFILE[string]> <ACTION[string:create|update]> <WS_RELEASE[string]> <DESIRED_CAPACITY[number]>"
+USAGE="$0 <AWS_PROFILE[string]> <ACTION[string:create|update|delete]>\
+ <WS_RELEASE[string]> <DESIRED_CAPACITY[number]>"
+
+if [ "${OP}" == "delete" ]
+then
+    aws --profile "${AWS_PROFILE}" \
+	cloudformation "${OP}-stack" \
+	--stack-name "${STACK_NAME}"
+    exit $?
+fi
 
 REQUIRED=( "${AWS_PROFILE}" "${OP}" "${WS_RELEASE}" "${DESIRED_CAPACITY}")
 
