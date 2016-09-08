@@ -20,7 +20,7 @@
         "MaxSize": "2",
         "DesiredCapacity": {
           "Ref": "AutoScalingDesiredCapacity"
-	},
+        },
         "VPCZoneIdentifier": [
           "subnet-a33a2bd5"
         ],
@@ -259,25 +259,25 @@
                 "chmod 744 aws.properties",
                 "chmod 500 startup.sh",
                 {
-		    "Fn::Join": [
-			" ",
-			[
-			    "/opt/aws/bin/cfn-signal -e $?",
-			    "--stack",
-			    {
-				"Ref": "AWS::StackName"
-			    },
-			    "--resource LaunchGroup",
-			    "--region",
-			    {
-				"Ref": "AWS::Region"
-			    }
-			]
-		    ]
-		},
-		"./startup.sh"
+                  "Fn::Join": [
+                    " ",
+                    [
+                      "/opt/aws/bin/cfn-signal -e $?",
+                      "--stack",
+                      {
+                        "Ref": "AWS::StackName"
+                      },
+                      "--resource LaunchGroup",
+                      "--region",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                },
+                "./startup.sh"
               ]
-	    ]
+            ]
           }
         },
         "InstanceType": {
