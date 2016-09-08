@@ -152,18 +152,17 @@
             "Fn::Join": [
               "\n",
               [
-                "yum install -y curl",
                 {
                   "Fn::Join": [
-                    "",
+                    " ",
                     [
-                      "/opt/aws/bin/cfn-init -v ",
-                      "         --stack ",
+                      "/opt/aws/bin/cfn-init -v",
+                      "--stack",
                       {
                         "Ref": "AWS::StackName"
                       },
-                      "         --resource LaunchConfig ",
-                      "         --region ",
+                      "--resource LaunchConfig",
+                      "--region",
                       {
                         "Ref": "AWS::Region"
                       }
@@ -254,13 +253,29 @@
                 },
                 "encrypt-channel=false",
                 "EOF",
-		"echo \"Working directory is: $(pwd)\"",
-		"curl https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh -o ./startup.sh",
+                "AWS_ACCESS_KEY_ID=\"${DATOMIC_READ_DEPLOY_ACCESS_KEY_ID}\" AWS_SECRET_ACCESS_KEY=\"${DATOMIC_READ_DEPLOY_AWS_SECRET_KEY}\" aws s3 cp \"s3://${DATOMIC_DEPLOY_BUCKET}/${DATOMIC_VERSION}/startup.sh\" startup.sh",
                 "chmod 744 aws.properties",
                 "chmod 500 startup.sh",
-                "./startup.sh"
+                {
+		    "Fn::Join": [
+			" ",
+			[
+			    "/opt/aws/bin/cfn-signal -e $?",
+			    "--stack",
+			    {
+				"Ref": "AWS::StackName"
+			    },
+			    "--resource LaunchGroup",
+			    "--region",
+			    {
+				"Ref": "AWS::Region"
+			    }
+			]
+		    ]
+		},
+		"./startup.sh"
               ]
-            ]
+	    ]
           }
         },
         "InstanceType": {
