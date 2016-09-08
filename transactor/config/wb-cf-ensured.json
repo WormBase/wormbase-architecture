@@ -18,7 +18,9 @@
       "Properties": {
         "MinSize": "1",
         "MaxSize": "2",
-        "DesiredCapacity": "1",
+        "DesiredCapacity": {
+          "Ref": "AutoScalingDesiredCapacity"
+	},
         "VPCZoneIdentifier": [
           "subnet-a33a2bd5"
         ],
@@ -476,7 +478,7 @@
     },
     "DatomicVersion": {
       "Type": "String",
-      "Default": "0.9.5385"
+      "Description": "The version of datomic-pro to use."
     },
     "DatomicLicenseKey": {
       "Type": "String",
@@ -488,6 +490,10 @@
       "ConstraintDescription": "Parameter must have a prefix of \"WS\"",
       "Description": "Wormbase Data release version, used as DynamoDB table name",
       "MinLength": 5
+    },
+    "AutoScalingDesiredCapacity": {
+      "Type": "String",
+      "Description": "The number of EC2 instances desired to be in service."
     }
   },
   "Description": "Datomic Transactor Template"
