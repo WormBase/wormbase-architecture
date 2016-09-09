@@ -44,7 +44,7 @@ configured AWS credentials with the AWS CLI (via `aws configure`)
 
 First, setup an alias to the command (or add to `$PATH`):
 ```bash
-alias cf-transactors="$HOME/transactor/bin/cf-transactors"
+alias cf-transactors="$HOME/git/wormbase-architecture/transactor/bin/cf-transactors"
 ```
 
 ```bash
