@@ -42,15 +42,19 @@ configured AWS credentials with the AWS CLI (via `aws configure`)
 
 #### Creating a new datomic transactor CloudFormation stack
 
+First, setup an alias to the command (or add to `$PATH`):
 ```bash
 alias cf-transactors="$HOME/transactor/bin/cf-transactors"
+```
+
+```bash
 cf-transactors "${PROFILE}" create "${WS_RELEASE}" "${DESIRED_CAPACITY}"
 ```
 
 #### Updating an existing datomic transactor CloudFormation stack
 
 ```bash
-./bin/transactor "${PROFILE}" update "${WS_RELEASE}" "${DESIRED_CAPACITY}"
+cf-transactors "${PROFILE}" update "${WS_RELEASE}" "${DESIRED_CAPACITY}"
 ```
 
 ### Tagging
