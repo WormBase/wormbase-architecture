@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  sudo: True
+  roles:
+    - datomic
+#    - datomic-api

@@ -1,0 +1,47 @@
+---
+# file: datomic/tasks/main.yml
+# This script is for launching the datomic docker container
+
+
+## Setting up host machine
+
+- name: create datastore folder
+  file: path=/datastore state=directory mode=0775
+
+- name: create Datomic datastore directory
+  file: path=/datastore/datomic state=directory mode=0775
+
+- name: create Datamic data directory
+  file: path=/datastore/datomic/data state=directory mode=0775
+
+- name: create Datomic config folder
+  file: path=/datastore/datomic/configs state=directory mode=0775
+
+- name: copy config files
+  copy: src=./configs/free-transactor.properties dest=/datastore/datomic/configs/
+
+- name: creating datomic image
+  docker_image: >
+    name=wormbase-datomic
+    tag=latest
+    path="./roles/datomic/files"
+    state=build
+
+# docker run -d -p 4334:4334 wormbase-datomic:latest
+
+- name: running datomic container
+  docker:
+    name: wormbase-datomic
+    image: wormbase-datomic:latest
+    state: started
+    ports: 
+      - "4334:4334"
+      - "4335:4335"
+      - "4336:4336"
+    expose: 
+      - 4334
+      - 4335
+      - 4336
+    volumes:
+      - '/datastore/datomic/data:/root/datomic_data:rw'
+      - '/datastore/datomic/config:/root/datomic_configs:rw'

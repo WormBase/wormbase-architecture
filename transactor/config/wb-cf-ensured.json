@@ -1,0 +1,501 @@
+{
+  "Resources": {
+    "LaunchGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Timeout": "PT15M",
+          "Count": "1"
+        }
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": "1",
+          "MaxBatchSize": "1",
+          "PauseTime": "PT12M5S"
+        }
+      },
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "2",
+        "DesiredCapacity": {
+          "Ref": "AutoScalingDesiredCapacity"
+        },
+        "VPCZoneIdentifier": [
+          "subnet-a33a2bd5"
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "AWS::StackName"
+            },
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "CreatedBy",
+            "Value": {
+              "Ref": "UserName"
+            },
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "Status",
+            "Value": "production",
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "Role",
+            "Value": "datomic-transactor",
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "Description",
+            "Value": "Instance for running a datomic transactor, created through CloudFormation",
+            "PropagateAtLaunch": "true"
+          }
+        ],
+        "AvailabilityZones": [
+          "us-east-1c"
+        ],
+        "LaunchConfigurationName": {
+          "Ref": "LaunchConfig"
+        }
+      }
+    },
+    "LaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Metadata": {
+        "Comment": "Install a simple application",
+        "AWS::CloudFormation::Init": {
+          "files": {
+            "/etc/cfn/cfn-hup.conf": {
+              "content": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "[main]\n",
+                    "stack=",
+                    {
+                      "Ref": "AWS::StackId"
+                    },
+                    "\n",
+                    "region=",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "\n"
+                  ]
+                ]
+              },
+              "mode": "000400",
+              "owner": "root",
+              "group": "root"
+            },
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+              "content": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "[cfn-auto-reloader-hook]\n",
+                    "triggers=post.update\n",
+                    "path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init\n",
+                    "action=/opt/aws/bin/cfn-init -v ",
+                    "         --stack ",
+                    {
+                      "Ref": "AWS::StackName"
+                    },
+                    "         --resource LaunchConfig ",
+                    "         --region ",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "\n",
+                    "runas=root\n"
+                  ]
+                ]
+              }
+            }
+          },
+          "services": {
+            "sysvinit": {
+              "cfn-hup": {
+                "enabled": "true",
+                "ensureRunning": "true",
+                "files": [
+                  "/etc/cfn/cfn-hup.conf",
+                  "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "AWSRegionArch2AMI",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Fn::FindInMap": [
+                "AWSInstanceType2Arch",
+                {
+                  "Ref": "InstanceType"
+                },
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n",
+              [
+                {
+                  "Fn::Join": [
+                    " ",
+                    [
+                      "/opt/aws/bin/cfn-init -v",
+                      "--stack",
+                      {
+                        "Ref": "AWS::StackName"
+                      },
+                      "--resource LaunchConfig",
+                      "--region",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                },
+                "exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1",
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export XMX",
+                      {
+                        "Ref": "Xmx"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export JAVA_OPTS",
+                      {
+                        "Ref": "JavaOpts"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export DATOMIC_DEPLOY_BUCKET",
+                      {
+                        "Ref": "DatomicDeployBucket"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export DATOMIC_VERSION",
+                      {
+                        "Ref": "DatomicVersion"
+                      }
+                    ]
+                  ]
+                },
+                "cd /datomic",
+                "cat <<EOF >aws.properties",
+                "host=`curl http://169.254.169.254/latest/meta-data/local-ipv4`",
+                "alt-host=`curl http://169.254.169.254/latest/meta-data/public-ipv4`",
+                "port=4334",
+                "aws-cloudwatch-dimension-value=wormbase-datomic-transactors",
+                "aws-cloudwatch-region=us-east-1",
+                "aws-dynamodb-region=us-east-1",
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "aws-dynamodb-table",
+                      {
+                        "Ref": "WormbaseDataVersion"
+                      }
+                    ]
+                  ]
+                },
+                "aws-peer-role=datomic-aws-peer",
+                "aws-s3-log-bucket-id=transactor-logs",
+                "aws-transactor-role=datomic-aws-transactor",
+                "protocol=ddb",
+                "memory-index-max=512m",
+                "memory-index-threshold=32m",
+                "object-cache-max=1g",
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "license-key",
+                      {
+                        "Ref": "DatomicLicenseKey"
+                      }
+                    ]
+                  ]
+                },
+                "encrypt-channel=false",
+                "EOF",
+                "AWS_ACCESS_KEY_ID=\"${DATOMIC_READ_DEPLOY_ACCESS_KEY_ID}\" AWS_SECRET_ACCESS_KEY=\"${DATOMIC_READ_DEPLOY_AWS_SECRET_KEY}\" aws s3 cp \"s3://${DATOMIC_DEPLOY_BUCKET}/${DATOMIC_VERSION}/startup.sh\" startup.sh",
+                "chmod 744 aws.properties",
+                "chmod 500 startup.sh",
+                {
+                  "Fn::Join": [
+                    " ",
+                    [
+                      "/opt/aws/bin/cfn-signal -e $?",
+                      "--stack",
+                      {
+                        "Ref": "AWS::StackName"
+                      },
+                      "--resource LaunchGroup",
+                      "--region",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                },
+                "./startup.sh"
+              ]
+            ]
+          }
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "InstanceMonitoring": {
+          "Ref": "InstanceMonitoring"
+        },
+        "SecurityGroups": [
+          "sg-20b09e5b"
+        ],
+        "IamInstanceProfile": {
+          "Ref": "InstanceProfile"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sdb",
+            "VirtualName": "ephemeral0"
+          }
+        ]
+      }
+    }
+  },
+  "Mappings": {
+    "AWSInstanceType2Arch": {
+      "m3.large": {
+        "Arch": "64h"
+      },
+      "hs1.8xlarge": {
+        "Arch": "64h"
+      },
+      "i2.xlarge": {
+        "Arch": "64h"
+      },
+      "m1.small": {
+        "Arch": "64p"
+      },
+      "c3.8xlarge": {
+        "Arch": "64h"
+      },
+      "m1.xlarge": {
+        "Arch": "64p"
+      },
+      "cr1.8xlarge": {
+        "Arch": "64h"
+      },
+      "m3.2xlarge": {
+        "Arch": "64h"
+      },
+      "c3.2xlarge": {
+        "Arch": "64h"
+      },
+      "m2.2xlarge": {
+        "Arch": "64p"
+      },
+      "cc2.8xlarge": {
+        "Arch": "64h"
+      },
+      "hi1.4xlarge": {
+        "Arch": "64p"
+      },
+      "r3.4xlarge": {
+        "Arch": "64h"
+      },
+      "m1.large": {
+        "Arch": "64p"
+      },
+      "m2.4xlarge": {
+        "Arch": "64p"
+      },
+      "c3.4xlarge": {
+        "Arch": "64h"
+      },
+      "r3.large": {
+        "Arch": "64h"
+      },
+      "r3.xlarge": {
+        "Arch": "64h"
+      },
+      "m2.xlarge": {
+        "Arch": "64p"
+      },
+      "m3.xlarge": {
+        "Arch": "64h"
+      },
+      "i2.4xlarge": {
+        "Arch": "64h"
+      },
+      "r3.8xlarge": {
+        "Arch": "64h"
+      },
+      "c1.medium": {
+        "Arch": "64p"
+      },
+      "i2.8xlarge": {
+        "Arch": "64h"
+      },
+      "m3.medium": {
+        "Arch": "64h"
+      },
+      "r3.2xlarge": {
+        "Arch": "64h"
+      },
+      "m1.medium": {
+        "Arch": "64p"
+      },
+      "c1.xlarge": {
+        "Arch": "64p"
+      },
+      "t1.micro": {
+        "Arch": "64p"
+      },
+      "c3.xlarge": {
+        "Arch": "64h"
+      },
+      "i2.2xlarge": {
+        "Arch": "64h"
+      }
+    },
+    "AWSRegionArch2AMI": {
+      "ap-northeast-1": {
+        "64p": "ami-952c6a94",
+        "64h": "ami-bf2f69be"
+      },
+      "us-west-1": {
+        "64p": "ami-3a9fa47f",
+        "64h": "ami-789fa43d"
+      },
+      "ap-southeast-1": {
+        "64p": "ami-ecfaa8be",
+        "64h": "ami-92faa8c0"
+      },
+      "us-west-2": {
+        "64p": "ami-1b13652b",
+        "64h": "ami-f51264c5"
+      },
+      "eu-central-1": {
+        "64p": "ami-e0a4a9fd",
+        "64h": "ami-e2a4a9ff"
+      },
+      "us-east-1": {
+        "64p": "ami-34ae4c5c",
+        "64h": "ami-82a94bea"
+      },
+      "eu-west-1": {
+        "64p": "ami-6d67a11a",
+        "64h": "ami-a566a0d2"
+      },
+      "ap-southeast-2": {
+        "64p": "ami-2d41da17",
+        "64h": "ami-c942d9f3"
+      },
+      "sa-east-1": {
+        "64p": "ami-df238ec2",
+        "64h": "ami-ad238eb0"
+      }
+    }
+  },
+  "Parameters": {
+    "InstanceType": {
+      "Description": "Type of EC2 instance to launch",
+      "Type": "String",
+      "Default": "m3.large"
+    },
+    "UserName": {
+      "Type": "String",
+      "Default": "awright"
+    },
+    "InstanceProfile": {
+      "Description": "Preexisting IAM role / instance profile",
+      "Type": "String",
+      "Default": "datomic-aws-transactor"
+    },
+    "Xmx": {
+      "Description": "Xmx setting for the JVM",
+      "Type": "String",
+      "AllowedPattern": "\\d+[GgMm]",
+      "Default": "5250m"
+    },
+    "InstanceMonitoring": {
+      "Description": "Detailed monitoring for store instances?",
+      "Type": "String",
+      "Default": "true"
+    },
+    "JavaOpts": {
+      "Description": "Options passed to Java launcher",
+      "Type": "String",
+      "Default": ""
+    },
+    "SecurityGroups": {
+      "Description": "Preexisting security groups.",
+      "Type": "CommaDelimitedList",
+      "Default": "datomic"
+    },
+    "DatomicDeployBucket": {
+      "Type": "String",
+      "Default": "deploy-a0dbc565-faf2-4760-9b7e-29a8e45f428e"
+    },
+    "DatomicVersion": {
+      "Type": "String",
+      "Description": "The version of datomic-pro to use."
+    },
+    "DatomicLicenseKey": {
+      "Type": "String",
+      "NoEcho": "true",
+      "Description": "Wormbase's datomic-pro license key"
+    },
+    "WormbaseDataVersion": {
+      "Type": "String",
+      "AllowedPattern": "WS\\d{3,}",
+      "ConstraintDescription": "Parameter must have a prefix of \"WS\"",
+      "Description": "Wormbase Data release version, used as DynamoDB table name",
+      "MinLength": 5
+    },
+    "AutoScalingDesiredCapacity": {
+      "Type": "String",
+      "Description": "The number of EC2 instances desired to be in service."
+    }
+  },
+  "Description": "Datomic Transactor Template"
+}

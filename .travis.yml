@@ -1,0 +1,21 @@
+sudo: required
+
+os:
+    -linux
+
+language: python
+python: "2.7"
+
+env:
+  - ANSIBLE_VERSION=1.8
+  - ANSIBLE_VERSION=1.9.2
+
+
+install:
+   - sudo pip install ansible==$ANSIBLE_VERSION
+
+script:
+   - ansible --version
+   - ansible-playbook -i inventory --syntax-check roles/datomic/tests/test.yml
+#   - ansible-playbook -i inventory --syntax-check role.yml
+#   - ansible-playbook -i inventory --connection=local --sudo -vvvv role.yml
