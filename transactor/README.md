@@ -21,7 +21,8 @@ accommodate the following features:
 Please note the following: #5
 
 ## Usage
-# CloudFormation stack operations for managing the datomic transactor
+
+### CloudFormation stack operations for managing the datomic transactor
 The stack was created the _very first_ time using the datomic tools'
 _create-cf-stack_ command.
 
@@ -39,20 +40,20 @@ configured AWS credentials with the AWS CLI (via `aws configure`)
   * `$DESIRED_CAPACITY` should be the number of transactors desired to
     be in service (Currently this is permitted to be 1 or 2).
 
-## Creating a new datomic transactor CloudFormation stack
+#### Creating a new datomic transactor CloudFormation stack
 
 ```bash
 alias cf-transactors="$HOME/transactor/bin/cf-transactors"
 cf-transactors "${PROFILE}" create "${WS_RELEASE}" "${DESIRED_CAPACITY}"
 ```
 
-### Updating an existing datomic transactor CloudFormation stack
+#### Updating an existing datomic transactor CloudFormation stack
 
 ```bash
 ./bin/transactor "${PROFILE}" update "${WS_RELEASE}" "${DESIRED_CAPACITY}"
 ```
 
-## Tagging
+### Tagging
 [WormBase AWS policy](https://docs.google.com/document/d/1ZhvyvQcNxNJlpyxXv9MuL_wONNWwRAhwTHqHDFWWgJ0/edit?ts=56a7c5a2#heading=h.fjmgla6sk2ww) requires
 specification of tags for resources.
 
@@ -61,7 +62,7 @@ template contains the appropriate tags as specified.
 
 ## IAM roles for the datomic transactor
 
-## AWS CLI usage
+### AWS CLI usage
 In the alias below, `$USER` should be the profile name you used to
 configure the AWS Command Line Interface (i.e the profile you supplied
 when running `aws configure`) This just ensures usage of the correct
