@@ -16,6 +16,7 @@ WB_AWS="aws --profile=${AWS_PROFILE}"
 USAGE="$0 <AWS_PROFILE[string]> <ACTION[string:create|update|delete]>\
  <WS_RELEASE[string]> <DESIRED_CAPACITY[number]>"
 
+# Handle delete stack case
 if [ "${OP}" == "delete" ]
 then
     aws --profile "${AWS_PROFILE}" \
@@ -24,11 +25,12 @@ then
     exit $?
 fi
 
+# Check required arguments are provided
 REQUIRED=( "${AWS_PROFILE}" "${OP}" "${WS_RELEASE}" "${DESIRED_CAPACITY}")
 
 n_required=${#REQUIRED[@]}
 n_provided=0
-for (( i=0; i<$n_required; i++))
+for (( i=0; i<$n_required; i++ ))
 do
     if [ ! -z $REQUIRED[$i] ]; then
 	let n_provided+=1
@@ -42,13 +44,14 @@ then
     exit 1
 fi
 
-if !([ "${OP}" == "create" ] || [ "${OP}" == "update" ])
+if ! ([ "${OP}" == "create" ] || [ "${OP}" == "update" ])
 then
     echo "${USAGE}"
     echo "${OP}"
     exit 2
 fi
 
+# Source datomic-pro license key from WormBase S3 bucket
 aws --profile "${AWS_PROFILE}" \
     s3 cp s3://wormbase/datomic-pro/license.key "${TMP_LK_PATH}"
 
@@ -70,7 +73,7 @@ CF_PARAMS=( "ParameterKey=UserName,ParameterValue=${AWS_PROFILE}"\ \
 "ParameterKey=AutoScalingDesiredCapacity,\
 ParameterValue=${DESIRED_CAPACITY}" )
 
-
+# Ensure template is valid before executing stack operation
 validation_errs_file="/tmp/$$.validation.errors"
 
 aws --profile "${AWS_PROFILE}" \
@@ -88,6 +91,7 @@ then
     exit 3
 fi
 
+# Execute the stack operation with parameters array
 aws --profile "${AWS_PROFILE}" \
     cloudformation "${OP}-stack" \
     --stack-name "${STACK_NAME}" \
