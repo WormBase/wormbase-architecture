@@ -1,0 +1,293 @@
+#!env python
+import functools
+import logging
+import os
+import re
+
+from botocore.exceptions import ClientError
+from botocore.exceptions import ProfileNotFound
+import boto3
+import click
+
+
+DEFAULT_CF_STACK_NAME = 'WBTransactor'
+
+manage_cmd_group = functools.partial(click.group, context_settings={
+    'help_option_names': ['-h', '--help']
+})
+
+
+def option(*args, **kw):
+    """Factory function for click.option that makes help text more useful.
+
+    When emitted, the help text will display any default passed to the option.
+
+    :returns: Same object as `click.option`.
+    """
+    default = kw.get('default')
+    if default is not None:
+        s_default = str(default)
+    else:
+        s_default = ''
+    help_text = kw.get('help', '')
+    if all((s_default, help_text, s_default not in help_text)):
+        kw['help'] = help_text + ' Default: ' + s_default
+    return click.option(*args, **kw)
+
+
+log_level_option = functools.partial(
+    option,
+    '-l',
+    '--log-level',
+    default='INFO',
+    type=click.Choice(choices=('DEBUG', 'INFO', 'WARNING', 'ERROR')),
+    help='Logging level.')
+
+
+def validate_desired_capacity(ctx, param, value):
+    if re.match(r'[12]', value) is None:
+        raise ValueError('DesiredCapacity Must be 1 or 2')
+    return value
+
+
+desired_capacity_option = functools.partial(
+    option, '--desired-capacity',
+    default='1',
+    type=str,
+    callback=validate_desired_capacity,
+    help='The number of EC2 instances desired to be in service.')
+
+
+
+template_path_option = functools.partial(
+    option,
+    '--cf-template-path',
+    type=click.Path(exists=True),
+    help='Path to CloudFormation template file.')
+
+
+def make_session(profile_name):
+    try:
+        sess = boto3.Session(profile_name=profile_name)
+    except ProfileNotFound as pnf:
+        logging.getLogger('boto3').error(str(pnf))
+        click.get_current_context().abort()
+    return sess
+
+
+class CommandContext:
+
+    def __init__(self, profile, cf_stack_name,
+                 cf_template_path=None,
+                 aws_username=None,
+                 verbose=True):
+        self._aws_username = aws_username
+        self.cf_stack_name = cf_stack_name
+        self.cf_template_path = cf_template_path
+        if cf_template_path is not None:
+            self.cf_template_body = 'file://' + self.cf_template_path
+        self.profile = profile
+        self.session = make_session(self.profile)
+        self.logfile_path = os.path.join(os.getcwd(), 'logs')
+        self.wb_dp_license_key_path = '/tmp/wp-dp-license.key'
+        self.verbose = verbose
+
+    def client(self, name):
+        return self.session.client('cloudformation')
+
+    def resource(self, name):
+        return self.session.resource(name)
+
+    @property
+    def s3_resource(self):
+        return self.resource('s3')
+
+    @property
+    def cf_resource(self):
+        return self.resource('cloudformation')
+
+    @property
+    def cf_client(self):
+        return self.client('cloudformation')
+
+    def read_file(self, path):
+        with open(path) as fp:
+            return fp.read()
+
+    def fetch_datomic_pro_license_key_text(self):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket('wormbase')
+        bucket.download_file('datomic-pro/license.key',
+                             self.wb_dp_license_key_path)
+        return self.read_file(self.wb_dp_license_key_path).rstrip()
+
+    @property
+    def aws_username(self):
+        if self._aws_username is None:
+            return self.profile
+        return self._aws_username
+
+
+pass_command_context = click.make_pass_decorator(CommandContext)
+
+
+@manage_cmd_group()
+@option('--profile',
+        default='default',
+        help='AWS profile')
+@option('--cf-stack-name',
+        default=DEFAULT_CF_STACK_NAME,
+        help='Name of the CloudFormation stack')
+@option('--aws-username',
+        default=None,
+        help='AWS username. Same as profile if not specified.')
+@option('--verbose/--quiet', default=True)
+@log_level_option(default='INFO')
+@click.pass_context
+def manage(ctx,
+           profile,
+           cf_stack_name,
+           aws_username,
+           log_level,
+           verbose):
+    ctx.verbose = verbose
+    if ctx.verbose:
+        boto3.set_stream_logger(level=getattr(logging, log_level))
+    ctx.obj = CommandContext(profile,
+                             cf_stack_name,
+                             aws_username=aws_username)
+    ctx.profile_name = profile
+    ctx.session = make_session(ctx.profile_name)
+    ctx.cf_stack_name = cf_stack_name
+
+
+def _make_tags(ctx):
+    return [dict(Key='CreatedBy', Value=ctx.aws_username),
+            dict(Key='Name', Value=ctx.cf_stack_name),
+            dict(Key='Status', Value='production'),
+            dict(Key='Role', Value='datomic-transactor'),
+            dict(Key='Description',
+                 Value=('Instance for running a datomic transactor '
+                        'created through CloudFormation'))]
+
+
+def _parameter(name, value=None):
+    param = {'ParameterKey': name}
+    if value:
+        param['ParameterValue'] = value
+    else:
+        param['UsePreviousValue'] = True
+    return param
+
+
+@manage.command()
+@template_path_option(default=os.path.join(os.getcwd(),
+                                           'config',
+                                           'wb-cf-ensured.json'))
+@desired_capacity_option()
+@click.argument('ws_version')
+@click.argument('datomic_version')
+@pass_command_context
+def create(ctx,
+           ws_version,
+           datomic_version,
+           desired_capacity,
+           cf_template_path):
+    """Create a new CloudFormation stack for Datomic tranactor(s).
+    """
+    wb_dp_license_key_text = ctx.fetch_datomic_pro_license_key_text()
+    params = [
+        _parameter('WormbaseDataVersion', ws_version),
+        _parameter('DatomicLicenseKey', wb_dp_license_key_text),
+        _parameter('DatomicVersion', datomic_version),
+        _parameter('AutoScalingDesiredCapacity', desired_capacity),
+    ]
+    kw = dict(StackName=ctx.cf_stack_name,
+              TemplateBody=ctx.read_file(cf_template_path),
+              Parameters=params,
+              Tags=_make_tags(ctx)
+    )
+    res = ctx.cf_resource.create_stack(**kw)
+    if res and ctx.verbose:
+        print(res)
+
+
+@manage.command()
+@desired_capacity_option()
+@template_path_option(default=None)
+@option('--ws-version',
+        default=None,
+        help=('WormBase data version e.g "WS255". '
+              'If not specified, uses currently configured version.'))
+@option('--datomic-version',
+        default=None,
+        type=str,
+        help='If not specified, use existing version')
+@pass_command_context
+def update(ctx,
+           ws_version,
+           datomic_version,
+           cf_template_path,
+           desired_capacity):
+    """Update the CloudFormation configuration of the Datomic transactor(s).
+    """
+    params = [
+        _parameter('WormbaseDataVersion', value=ws_version),
+        _parameter('DatomicLicenseKey'),
+        _parameter('DatomicVersion', value=datomic_version),
+        _parameter('AutoScalingDesiredCapacity', value=desired_capacity),
+    ]
+    kw = dict(StackName=ctx.cf_stack_name,
+              Tags=_make_tags(ctx),
+              Parameters=params)
+    if cf_template_path is None:
+        kw['UsePreviousTemplate'] = True
+    else:
+        kw['TemplateBody'] = ctx.read_file(cf_template_path)
+    res = ctx.cf_client.update_stack(**kw)
+    if res and ctx.verbose:
+        print(res)
+
+
+@manage.command()
+@pass_command_context
+def delete(ctx):
+    """Delete the existing CloudFormation stack for the Datomic transactor(s).
+    """
+    res = ctx.cf_client.delete_stack(StackName=ctx.cf_stack_name)
+    if res and ctx.verbose:
+        print(res)
+
+
+@manage.command()
+@pass_command_context
+def status(ctx):
+    stacks = ctx.cf_resource.stacks.filter(StackName=ctx.cf_stack_name)
+    try:
+        transactors_stack = next(iter(stacks), None)
+    except ClientError:
+        print('No transactor stack with name', repr(ctx.cf_stack_name))
+    else:
+        if transactors_stack is None:
+            print('No stack present')
+        else:
+            print(transactors_stack.stack_status)
+            print('Event log:')
+            for se in transactors_stack.events.all():
+                ts = se.timestamp.replace(microsecond=0)
+                print(ts.isoformat(' '), se.resource_status)
+
+
+@manage.command('validate-template')
+@template_path_option(default=os.path.join(os.getcwd(),
+                                           'config',
+                                           'wb-cf-ensured.json'))
+@pass_command_context
+def validate_template(ctx, cf_template_path):
+    res = ctx.cf_client.validate_template(
+        TemplateBody=ctx.read_file(cf_template_path))
+    logging.getLogger('boto3').info(res)
+
+
+if __name__ == '__main__':
+    manage()
