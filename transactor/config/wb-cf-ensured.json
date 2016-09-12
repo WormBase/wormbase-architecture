@@ -24,37 +24,6 @@
         "VPCZoneIdentifier": [
           "subnet-a33a2bd5"
         ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Ref": "AWS::StackName"
-            },
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "CreatedBy",
-            "Value": {
-              "Ref": "UserName"
-            },
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Status",
-            "Value": "production",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Role",
-            "Value": "datomic-transactor",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Description",
-            "Value": "Instance for running a datomic transactor, created through CloudFormation",
-            "PropagateAtLaunch": "true"
-          }
-        ],
         "AvailabilityZones": [
           "us-east-1c"
         ],

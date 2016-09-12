@@ -20,7 +20,44 @@ accommodate the following features:
 
 Please note the following: #5
 
+### Installation
+
+Install with Python2 or Python3, by
+first
+[installing](https://packaging.python.org/installing/#requirements-for-installing-packages) `pip`
+and `virtualenv` if not already installed, then issue the following
+command to create a virtualenv:
+
+```bash
+virtualenv -p python2 wb-cf-transactors
+source wb-cf-transactors/bin/activate
+```
+
+In the same directory as this file you're reading:
+
+```
+pip install -r requirements.txt
+```
+
+Before installing and using using
+
 ## Usage
+
+Ensure to activate the virtualenv before using:
+
+```bash
+source wb-cf-transactors/bin/activate
+```
+
+and optionally setup an alias to the command (or add to `$PATH`):
+
+```bash
+DATOMIC_VERSION="0.9.5385"
+alias cf-transactors="$HOME/transactor/bin/manage"
+```
+
+Adding `--help` to the end of the aliased command above will describe
+the available options and any required arguments.
 
 ### CloudFormation stack operations for managing the datomic transactor
 The stack was created the _very first_ time using the datomic tools'
@@ -42,26 +79,28 @@ configured AWS credentials with the AWS CLI (via `aws configure`)
 
 #### Creating a new datomic transactor CloudFormation stack
 
-First, setup an alias to the command (or add to `$PATH`):
 ```bash
-alias cf-transactors="$HOME/git/wormbase-architecture/transactor/bin/cf-transactors"
-```
-
-```bash
-cf-transactors "${PROFILE}" create "${WS_RELEASE}" "${DESIRED_CAPACITY}"
+cf-transactors --profile="${PROFILE}" create "${WS_RELEASE}" "${DATOMIC_VERSION}"
 ```
 
 #### Updating an existing datomic transactor CloudFormation stack
 
+Currently, you can update any combination of the options available,
+but at least one of `$WS_RELEASE`, `$DESIRED_CAPACITY` or
+`$DATOMIC_VERSION` must be supplied for an update command to proceed.
+
+For example, to update the desired capacity to `1` (assuming it is
+currently set to `2`):
+
 ```bash
-cf-transactors "${PROFILE}" update "${WS_RELEASE}" "${DESIRED_CAPACITY}"
+cf-transactors --profile="${PROFILE}" update --desired-capacity=1
 ```
 
 ### Tagging
 [WormBase AWS policy](https://docs.google.com/document/d/1ZhvyvQcNxNJlpyxXv9MuL_wONNWwRAhwTHqHDFWWgJ0/edit?ts=56a7c5a2#heading=h.fjmgla6sk2ww) requires
 specification of tags for resources.
 
-The `cf-transactors` script ensures that the CloudFormation JSON
+The `manage` script ensures that the CloudFormation JSON
 template contains the appropriate tags as specified.
 
 ## IAM roles for the datomic transactor
