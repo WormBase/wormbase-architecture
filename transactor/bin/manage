@@ -60,7 +60,6 @@ desired_capacity_option = functools.partial(
     help='The number of EC2 instances desired to be in service.')
 
 
-
 template_path_option = functools.partial(
     option,
     '--cf-template-path',
