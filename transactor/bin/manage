@@ -79,19 +79,21 @@ def make_session(profile_name):
 class CommandContext:
 
     def __init__(self, profile, cf_stack_name,
-                 cf_template_path=None,
                  aws_username=None,
                  verbose=True):
         self._aws_username = aws_username
         self.cf_stack_name = cf_stack_name
-        self.cf_template_path = cf_template_path
-        if cf_template_path is not None:
-            self.cf_template_body = 'file://' + self.cf_template_path
         self.profile = profile
         self.session = make_session(self.profile)
         self.logfile_path = os.path.join(os.getcwd(), 'logs')
         self.wb_dp_license_key_path = '/tmp/wp-dp-license.key'
         self.verbose = verbose
+
+    @property
+    def aws_username(self):
+        if self._aws_username is None:
+            return self.profile
+        return self._aws_username
 
     def client(self, name):
         return self.session.client('cloudformation')
