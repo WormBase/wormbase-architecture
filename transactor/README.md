@@ -96,15 +96,6 @@ currently set to `2`):
 cf-transactors --profile="${PROFILE}" update --desired-capacity=1
 ```
 
-### Tagging
-[WormBase AWS policy](https://docs.google.com/document/d/1ZhvyvQcNxNJlpyxXv9MuL_wONNWwRAhwTHqHDFWWgJ0/edit?ts=56a7c5a2#heading=h.fjmgla6sk2ww) requires
-specification of tags for resources.
-
-The `manage` script ensures that the CloudFormation JSON
-template contains the appropriate tags as specified.
-
-## IAM roles for the datomic transactor
-
 ### AWS CLI usage
 In the alias below, `$USER` should be the profile name you used to
 configure the AWS Command Line Interface (i.e the profile you supplied
@@ -115,6 +106,15 @@ credentials when interacting with AWS.
 alias wb-aws="aws --profile=$USER"
 ```
 
+#### Viewing the status of the current transactor stack
+This can be done via the AWS web console, or using the CLI:
+
+```bash
+wb-aws cloudformation describe-stacks --stack-name WBTransactor
+```
+
+## IAM roles for the datomic transactor
+
 The following commands define the various IAM role and policy statements
 required for the transactor and peers to interact.
 
@@ -122,7 +122,7 @@ _*These commands are only run to set up a brand new transactor
 configuration in IAM for the first time, and such do not need to be
 run as part of any WormBase release.*_
 
-### Datomic peer configuration
+### Peer configuration
 
 ```bash
 AR_POLICY_PATH="$(pwd)/roles/assume-role-policy.json"
@@ -137,7 +137,7 @@ wb-aws iam put-role-policy \
     --policy-document=file://$(pwd)/roles/wormbase-peer.json
 ```
 
-### Datomic transactors
+### Transactor configuration
 
 ```bash
 wb-aws iam create-role \
@@ -146,16 +146,23 @@ wb-aws iam create-role \
 
 wb-aws iam put-role-policy --role-name datomic-aws-transactor \
     --policy-name wormbase-transactor \
-    --policy-document=file://./roles/wormbase-transactor.json
+    --policy-document=file://$(pwd)/roles/wormbase-transactor.json
 ```
 
-### Creation of an EC2 Security Group
+### EC2 Security group
 ```bash
 wb-aws ec2 create-security-group \
     --group-name datomic \
     --description "SG for Datomic transactor" \
     --vpc-id vpc-8e0087e9
 ```
+
+### Tagging
+[WormBase AWS policy](https://docs.google.com/document/d/1ZhvyvQcNxNJlpyxXv9MuL_wONNWwRAhwTHqHDFWWgJ0/edit?ts=56a7c5a2#heading=h.fjmgla6sk2ww) requires
+specification of tags for resources.
+
+The `manage` script ensures that the CloudFormation JSON
+template contains the appropriate tags as specified.
 
 ## References
 - https://groups.google.com/forum/#!topic/datomic/5N4XZp4SSwM
