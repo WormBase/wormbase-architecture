@@ -23,6 +23,9 @@ manage_cmd_group = functools.partial(click.group, context_settings={
 })
 
 
+logger = logging.getLogger('boto3')
+
+
 def option(*args, **kw):
     """Factory function for click.option that makes help text more useful.
 
@@ -45,7 +48,7 @@ log_level_option = functools.partial(
     option,
     '-l',
     '--log-level',
-    default='INFO',
+    default='WARNING',
     type=click.Choice(choices=('DEBUG', 'INFO', 'WARNING', 'ERROR')),
     help='Logging level.')
 
