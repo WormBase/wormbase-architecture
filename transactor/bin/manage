@@ -72,11 +72,28 @@ template_path_option = functools.partial(
     help='Path to CloudFormation template file.')
 
 
+def command_result_reporter(func):
+    """Decorator that prints the result of commands.
+
+    Results are printed dependant on the truthy-ness of `verbose` flag
+    supplied to the top-level command.
+    """
+
+    @functools.wraps(func)
+    def reporter(ctx, *args, **kw):
+        result = func(ctx, *args, **kw)
+        if result and ctx.verbose:
+            print(result)
+
+    return reporter
+
+
 def make_session(profile_name):
+    """Create an AWS boto3 session."""
     try:
         sess = boto3.Session(profile_name=profile_name)
     except ProfileNotFound as pnf:
-        logging.getLogger('boto3').error(str(pnf))
+        logger.error(str(pnf))
         click.get_current_context().abort()
     return sess
 
@@ -147,12 +164,11 @@ def manage(ctx,
            aws_username,
            log_level,
            verbose):
-    ctx.verbose = verbose
-    if ctx.verbose:
-        boto3.set_stream_logger(level=getattr(logging, log_level))
+    boto3.set_stream_logger(level=getattr(logging, log_level))
     ctx.obj = CommandContext(profile,
                              cf_stack_name,
-                             aws_username=aws_username)
+                             aws_username=aws_username,
+                             verbose=verbose)
     ctx.profile_name = profile
     ctx.session = make_session(ctx.profile_name)
     ctx.cf_stack_name = cf_stack_name
@@ -183,6 +199,7 @@ def _parameter(name, value=None):
 @click.argument('ws_version')
 @click.argument('datomic_version')
 @pass_command_context
+@command_result_reporter
 def create(ctx,
            ws_version,
            datomic_version,
@@ -202,9 +219,7 @@ def create(ctx,
               Parameters=params,
               Tags=_make_tags(ctx)
     )
-    res = ctx.cf_resource.create_stack(**kw)
-    if res and ctx.verbose:
-        print(res)
+    return ctx.cf_resource.create_stack(**kw)
 
 
 @manage.command()
@@ -219,6 +234,7 @@ def create(ctx,
         type=str,
         help='If not specified, use existing version')
 @pass_command_context
+@command_result_reporter
 def update(ctx,
            ws_version,
            datomic_version,
@@ -239,19 +255,16 @@ def update(ctx,
         kw['UsePreviousTemplate'] = True
     else:
         kw['TemplateBody'] = ctx.read_file(cf_template_path)
-    res = ctx.cf_client.update_stack(**kw)
-    if res and ctx.verbose:
-        print(res)
+    return ctx.cf_client.update_stack(**kw)
 
 
 @manage.command()
 @pass_command_context
+@command_result_reporter
 def delete(ctx):
     """Delete the existing CloudFormation stack for the Datomic transactor(s).
     """
-    res = ctx.cf_client.delete_stack(StackName=ctx.cf_stack_name)
-    if res and ctx.verbose:
-        print(res)
+    return ctx.cf_client.delete_stack(StackName=ctx.cf_stack_name)
 
 
 @manage.command()
@@ -274,11 +287,12 @@ def status(ctx):
 @manage.command('validate-template')
 @template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
 @pass_command_context
+@command_result_reporter
 def validate_template(ctx, cf_template_path):
     """Validate the CloudFormation JSON template."""
-    res = ctx.cf_client.validate_template(
+    result = ctx.cf_client.validate_template(
         TemplateBody=ctx.read_file(cf_template_path))
-    logging.getLogger('boto3').info(res)
+    return result
 
 
 if __name__ == '__main__':
