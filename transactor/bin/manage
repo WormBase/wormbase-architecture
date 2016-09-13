@@ -102,10 +102,6 @@ class CommandContext:
         return self.session.resource(name)
 
     @property
-    def s3_resource(self):
-        return self.resource('s3')
-
-    @property
     def cf_resource(self):
         return self.resource('cloudformation')
 
@@ -123,12 +119,6 @@ class CommandContext:
         bucket.download_file('datomic-pro/license.key',
                              self.wb_dp_license_key_path)
         return self.read_file(self.wb_dp_license_key_path).rstrip()
-
-    @property
-    def aws_username(self):
-        if self._aws_username is None:
-            return self.profile
-        return self._aws_username
 
 
 pass_command_context = click.make_pass_decorator(CommandContext)
