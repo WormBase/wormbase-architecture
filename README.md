@@ -7,7 +7,7 @@ The main provisioning tool that is used in the repostitory is Ansible.
 
 ##Getting started - install Ansible
 
-First you will need to install docker and other dependencies on your host machine
+First you will need to install docker and other dependencies on your host machine.
 
 ### mount devices
         Follow instruction from http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
