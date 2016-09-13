@@ -1,4 +1,6 @@
 #!env python
+# -*- mode: Python; fill-column: 79; comment-column: 50; -*-
+
 import functools
 import logging
 import os
