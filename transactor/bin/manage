@@ -89,7 +89,6 @@ class CommandContext:
         self.cf_stack_name = cf_stack_name
         self.profile = profile
         self.session = make_session(self.profile)
-        self.logfile_path = os.path.join(os.getcwd(), 'logs')
         self.wb_dp_license_key_path = '/tmp/wp-dp-license.key'
         self.verbose = verbose
 
