@@ -14,6 +14,10 @@ import click
 
 DEFAULT_CF_STACK_NAME = 'WBTransactor'
 
+DEFAULT_CF_TEMPLATE_PATH = os.path.join(os.getcwd(),
+                                        'config',
+                                        'wb-cf-ensured.json')
+
 manage_cmd_group = functools.partial(click.group, context_settings={
     'help_option_names': ['-h', '--help']
 })
@@ -174,9 +178,7 @@ def _parameter(name, value=None):
 
 
 @manage.command()
-@template_path_option(default=os.path.join(os.getcwd(),
-                                           'config',
-                                           'wb-cf-ensured.json'))
+@template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
 @desired_capacity_option()
 @click.argument('ws_version')
 @click.argument('datomic_version')
@@ -261,20 +263,15 @@ def status(ctx):
     except ClientError:
         print('No transactor stack with name', repr(ctx.cf_stack_name))
     else:
-        if transactors_stack is None:
-            print('No stack present')
-        else:
-            print(transactors_stack.stack_status)
-            print('Event log:')
-            for se in transactors_stack.events.all():
-                ts = se.timestamp.replace(microsecond=0)
-                print(ts.isoformat(' '), se.resource_status)
+        print(transactors_stack.stack_status)
+        print('Event log:')
+        for se in transactors_stack.events.all():
+            ts = se.timestamp.replace(microsecond=0)
+            print(ts.isoformat(' '), se.resource_status)
 
 
 @manage.command('validate-template')
-@template_path_option(default=os.path.join(os.getcwd(),
-                                           'config',
-                                           'wb-cf-ensured.json'))
+@template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
 @pass_command_context
 def validate_template(ctx, cf_template_path):
     res = ctx.cf_client.validate_template(
