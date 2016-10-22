@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STACK_NAME="WBTransactor"
+STACK_NAME="WBTransactor$3"
 DATOMIC_VERSION="0.9.5385"
 TEMPLATE_DIR="${HOME}/git/wormbase-architecture/transactor/config"
 TEMPLATE_PATH="${TEMPLATE_DIR}/wb-cf-ensured.json"
