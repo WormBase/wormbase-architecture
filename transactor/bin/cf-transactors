@@ -87,7 +87,7 @@ rm "${validation_errs_file}"
 
 if [ $valid -ne 0 ];
 then
-    echo -e "${validation_errs_file}"
+    echo -e "${validation_errs}"
     exit 3
 fi
 
