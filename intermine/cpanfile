@@ -1,0 +1,3 @@
+requires "JSON::XS";
+requires "Capture::Tiny";
+requires "IO::CaptureOutput";
