@@ -22,14 +22,19 @@ use Data::Dumper;
 my $im_security_group = "intermine-dev";
 my $subnet_id = "subnet-a33a2bd5";
 
+my $intermine_url = "intermine-test.wormbase.org";
+#my $intermine_url = "intermine.wormbase.org";
+
 my $username = "awright";
 my $rollout_version = $ARGV[0];
 my $new_version = $rollout_version + 1;
 $rollout_version .= "-test";
 $new_version .= "-test";
 
+
+
 my $old_name = "im-$rollout_version.wormbase.org";
-my $new_im_name = "im-$new_version.wormbase.org";
+my $new_name = "im-$new_version.wormbase.org";
 
 
 my $coder = JSON::XS->new->ascii->pretty->allow_nonref;
@@ -69,9 +74,9 @@ else {
 
 my ($command, $response);
 
-say "Creating $new_im_name";
-if (defined $im_instances->{$new_im_name}) { 
-    say "SKIPPING: $new_im_name already exists";
+say "Creating $new_name";
+if (defined $im_instances->{$new_name}) { 
+    say "\tSKIPPING: $new_name already exists";
 }
 else {
    my $ami = $im_instances->{$old_name};
@@ -80,25 +85,30 @@ else {
 
    my @instances = @{$response->{Instances}};
    my $instance = $instances[0];
+   $im_instances->{$new_name} = $instance;
+
    my $new_instance_id = $instance->{InstanceId};
    say "new instance id: $new_instance_id";
 
-   say "tagging manchine";
+   say "\t\tTagging manchine";
+   tag_resource($new_name, $new_instance_id, $username, $new_version, "development");
 
-   tag_resource($new_im_name, $new_instance_id, $username, $new_version, "development");
-
-   say "create CNAME";
+   say "\t\tcreate CNAME";
    my $command = "aws route53 change-resource-record-sets --hosted-zone-id";
 
 }
 
-say "Adding CNAME record for $new_im_name";
-if (defined $cname_records->{$new_im_name}) {
-    say "SKIPPING: CNAME record already exists";
+say "Adding CNAME record for $new_name";
+if (defined $cname_records->{"$new_name."}) {
+    say "\tSKIPPING: CNAME record already exists";
 }
 else {
-    say "creating cname record";
-    my $command = aws route53 change-resource-record-sets --hosted-zone-id --change-batch '{ "Comment": "Created by rotate-intermine.pl","Changes":[{"Action": "CREATE","ResourceRecordSet": {"Name": "api.realguess.net.","Type": "CNAME","TTL": 300,"ResourceRecords": [{"Value": "'.www.realguess.net.'"}]}}]}'
+    my $instance_url = $im_instances->{$new_name}{PublicDnsName};
+    my $command = "aws route53 change-resource-record-sets --hosted-zone-id $hosted_zone_id --change-batch '{ \"Comment\": \"Created by rotate-intermine.pl\",\"Changes\":[{\"Action\": \"CREATE\",\"ResourceRecordSet\": {\"Name\": \"$intermine_url\",\"Type\": \"CNAME\",\"TTL\": 300,\"ResourceRecords\": [{\"Value\": \"'$new_name'\"}]}}]}'";
+
+    say "\tCOMMAND: $command";
+    ($stdout, $stderr) = capture {system($command)};
+    die "error $stderr" if $stderr;
 }
 
 say "Changing tag for $old_name to production and changing security group to production";
@@ -122,6 +132,13 @@ else {
     say "SKIPPING: $old_name instance not found";
 }
  
+say "Changing the machine $intermine_url is pointing to";
+$command = "aws route53 change-resource-record-sets --hosted-zone-id $hosted_zone_id --change-batch '{ \"Comment\": \"Created by rotate-intermine.pl\",\"Changes\":[{\"Action\": \"UPSERT\",\"ResourceRecordSet\": {\"Name\": \"$old_name\",\"Type\": \"CNAME\",\"TTL\": 300,\"ResourceRecords\": [{\"Value\": \"'$intermine_url'\"}]}}]}'";
+
+say "\tCOMMAND: $command";
+($stdout, $stderr) = capture {system($command)};
+die "error $stderr" if $stderr;
+
 say "DONE";
 
 sub create_instance_from_ami {
