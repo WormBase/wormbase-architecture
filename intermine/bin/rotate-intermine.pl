@@ -12,26 +12,19 @@ use Capture::Tiny ':all';
 
 use Data::Dumper;
 
-###USAGE perl bin/rotate-intermine.pl <rollout_version>
-#
-# 1)change variable values at top of this script
-# 2)run command (ex. perl bin/rotate-intermine.pl 254)
-#
-# This command would make a ami of im254 and then make an instance im255. Followed by changing the status tag for im254 to production. At this point it will also change the CNAME for ws254 so that intermine.wormbase.org points to it.  
-
 my $im_security_group = "intermine-dev";
 my $subnet_id = "subnet-a33a2bd5";
 
-my $intermine_url = "intermine-test.wormbase.org";
-#my $intermine_url = "intermine.wormbase.org";
+##If you want to test this script change which line is commented for defining the $intermine_url and uncomment the changing of the $rollout_version and the $new_version
+
+#my $intermine_url = "intermine-test.wormbase.org";
+my $intermine_url = "intermine.wormbase.org";
 
 my $username = "awright";
 my $rollout_version = $ARGV[0];
 my $new_version = $rollout_version + 1;
-$rollout_version .= "-test";
-$new_version .= "-test";
-
-
+#$rollout_version .= "-test";
+#$new_version .= "-test";
 
 my $old_name = "im-$rollout_version.wormbase.org";
 my $new_name = "im-$new_version.wormbase.org";
@@ -317,5 +310,3 @@ sub get_im_image {
 
     return $im_image;
  }   
-
-
