@@ -359,6 +359,9 @@
       "t1.micro": {
         "Arch": "64p"
       },
+      "c3.large": {
+        "Arch": "64h"
+      },
       "c3.xlarge": {
         "Arch": "64h"
       },
@@ -424,7 +427,7 @@
       "Description": "Xmx setting for the JVM",
       "Type": "String",
       "AllowedPattern": "\\d+[GgMm]",
-      "Default": "5250m"
+      "Default": "2625m"
     },
     "InstanceMonitoring": {
       "Description": "Detailed monitoring for store instances?",
