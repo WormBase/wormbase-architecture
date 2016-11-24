@@ -2,7 +2,7 @@
 
 The transactor is configured using an AWS CloudFormation template,
 which was initially generating using the datomic "Appliance" AMI,
-using instructions from the [Datomic [AWS docs][1].
+using instructions from the Datomic [AWS docs][1].
 
 The _transactor_ folder contains all required files.
 
@@ -22,11 +22,9 @@ Please note the following: #5
 
 ### Installation
 
-Install with Python2 or Python3, by
-first
-[installing](https://packaging.python.org/installing/#requirements-for-installing-packages) `pip`
-and `virtualenv` if not already installed, then issue the following
-command to create a virtualenv:
+Install with Python2 or Python3, by [installing pip] and `virtualenv`
+if not already installed, then issue the following command to create a
+virtualenv:
 
 ```bash
 virtualenv -p python2 wb-cf-transactors
@@ -169,3 +167,5 @@ template contains the appropriate tags as specified.
 - http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html
 
 [1]: http://docs.datomic.com/aws.html
+[installing pip]: https://packaging.python.org/installing/#requirements-for-installing-packages
+[AWS Credentials]: /WormBase/wormbase-architecture/wiki/AWS-Credentials
