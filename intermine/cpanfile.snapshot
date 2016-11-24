@@ -1,0 +1,63 @@
+# carton snapshot format: version 1.0
+DISTRIBUTIONS
+  Canary-Stability-2012
+    pathname: M/ML/MLEHMANN/Canary-Stability-2012.tar.gz
+    provides:
+      Canary::Stability 2012
+    requirements:
+      ExtUtils::MakeMaker 0
+  Capture-Tiny-0.44
+    pathname: D/DA/DAGOLDEN/Capture-Tiny-0.44.tar.gz
+    provides:
+      Capture::Tiny 0.44
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 6.17
+      File::Spec 0
+      File::Temp 0
+      IO::Handle 0
+      Scalar::Util 0
+      perl 5.006
+      strict 0
+      warnings 0
+  IO-CaptureOutput-1.1104
+    pathname: D/DA/DAGOLDEN/IO-CaptureOutput-1.1104.tar.gz
+    provides:
+      IO::CaptureOutput 1.1104
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 6.17
+      File::Basename 0
+      File::Temp 0.16
+      Symbol 0
+      perl 5.006
+      strict 0
+      vars 0
+      warnings 0
+  JSON-XS-3.02
+    pathname: M/ML/MLEHMANN/JSON-XS-3.02.tar.gz
+    provides:
+      JSON::XS 3.02
+    requirements:
+      Canary::Stability 0
+      ExtUtils::MakeMaker 6.52
+      Types::Serialiser 0
+      common::sense 0
+  Types-Serialiser-1.0
+    pathname: M/ML/MLEHMANN/Types-Serialiser-1.0.tar.gz
+    provides:
+      JSON::PP::Boolean 1.0
+      Types::Serialiser 1.0
+      Types::Serialiser::BooleanBase 1.0
+      Types::Serialiser::Error 1.0
+    requirements:
+      ExtUtils::MakeMaker 0
+      common::sense 0
+  common-sense-3.74
+    pathname: M/ML/MLEHMANN/common-sense-3.74.tar.gz
+    provides:
+      common::sense 3.74
+    requirements:
+      ExtUtils::MakeMaker 0

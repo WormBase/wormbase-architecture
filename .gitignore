@@ -1,4 +1,9 @@
-# ignore
+# ignore Vim
 *.swp
 *.swo
 *~
+
+*hardcopy.*
+*screenlog.*
+
+intermine/local/*
