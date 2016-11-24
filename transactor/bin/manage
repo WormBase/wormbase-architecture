@@ -151,7 +151,7 @@ pass_command_context = click.make_pass_decorator(CommandContext)
 
 @manage_cmd_group()
 @option('--profile',
-        default='default',
+        default=os.environ.get('AWS_DEFAULT_PROFILE', 'default'),
         help='AWS profile')
 @option('--cf-stack-name',
         default=DEFAULT_CF_STACK_NAME,

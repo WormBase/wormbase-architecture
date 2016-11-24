@@ -2,7 +2,7 @@
 
 The transactor is configured using an AWS CloudFormation template,
 which was initially generating using the datomic "Appliance" AMI,
-using instructions from the [Datomic [AWS docs][1].
+using instructions from the Datomic [AWS docs][1].
 
 The _transactor_ folder contains all required files.
 
@@ -22,11 +22,9 @@ Please note the following: #5
 
 ### Installation
 
-Install with Python2 or Python3, by
-first
-[installing](https://packaging.python.org/installing/#requirements-for-installing-packages) `pip`
-and `virtualenv` if not already installed, then issue the following
-command to create a virtualenv:
+Install with Python2 or Python3, by [installing pip] and `virtualenv`
+if not already installed, then issue the following command to create a
+virtualenv:
 
 ```bash
 virtualenv -p python2 wb-cf-transactors
@@ -68,9 +66,6 @@ current user.
 
 In the examples below:
 
-  * `$PROFILE` should be the name of the profile you've previously
-configured AWS credentials with the AWS CLI (via `aws configure`)
-
   * `$WS_RELEASE` should be the name of the data release (and DynamoDB
     table) that you wish to use.
 
@@ -80,7 +75,7 @@ configured AWS credentials with the AWS CLI (via `aws configure`)
 #### Creating a new datomic transactor CloudFormation stack
 
 ```bash
-cf-transactors --profile="${PROFILE}" create "${WS_RELEASE}" "${DATOMIC_VERSION}"
+cf-transactors create "${WS_RELEASE}" "${DATOMIC_VERSION}"
 ```
 
 #### Updating an existing datomic transactor CloudFormation stack
@@ -93,24 +88,16 @@ For example, to update the desired capacity to `1` (assuming it is
 currently set to `2`):
 
 ```bash
-cf-transactors --profile="${PROFILE}" update --desired-capacity=1
+cf-transactors update --desired-capacity=1
 ```
 
 ### AWS CLI usage
-In the alias below, `$USER` should be the profile name you used to
-configure the AWS Command Line Interface (i.e the profile you supplied
-when running `aws configure`) This just ensures usage of the correct
-credentials when interacting with AWS.
-
-```bash
-alias wb-aws="aws --profile=$USER"
-```
 
 #### Viewing the status of the current transactor stack
 This can be done via the AWS web console, or using the CLI:
 
 ```bash
-wb-aws cloudformation describe-stacks --stack-name WBTransactor
+aws cloudformation describe-stacks --stack-name WBTransactor
 ```
 
 ## IAM roles for the datomic transactor
@@ -126,12 +113,12 @@ run as part of any WormBase release.*_
 
 ```bash
 AR_POLICY_PATH="$(pwd)/roles/assume-role-policy.json"
-wb-aws iam create-role \
+aws iam create-role \
     --role-name datomic-aws-peer \
      --assume-role-policy-document="file://${AR_POLICY_PATH}"
 
 PEER_POLICY_PATH="$(pwd)/roles/wormbase-peer.json"
-wb-aws iam put-role-policy \
+aws iam put-role-policy \
     --role-name datomic-aws-peer \
     --policy-name wormbase-peer \
     --policy-document=file://$(pwd)/roles/wormbase-peer.json
@@ -140,18 +127,18 @@ wb-aws iam put-role-policy \
 ### Transactor configuration
 
 ```bash
-wb-aws iam create-role \
+aws iam create-role \
     --role-name datomic-aws-transactor
     --assume-role-policy-document="${AR_POLICY_PATH}"
 
-wb-aws iam put-role-policy --role-name datomic-aws-transactor \
+aws iam put-role-policy --role-name datomic-aws-transactor \
     --policy-name wormbase-transactor \
     --policy-document=file://$(pwd)/roles/wormbase-transactor.json
 ```
 
 ### EC2 Security group
 ```bash
-wb-aws ec2 create-security-group \
+aws ec2 create-security-group \
     --group-name datomic \
     --description "SG for Datomic transactor" \
     --vpc-id vpc-8e0087e9
@@ -169,3 +156,5 @@ template contains the appropriate tags as specified.
 - http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html
 
 [1]: http://docs.datomic.com/aws.html
+[installing pip]: https://packaging.python.org/installing/#requirements-for-installing-packages
+[AWS Credentials]: /WormBase/wormbase-architecture/wiki/AWS-Credentials
