@@ -409,7 +409,7 @@
     "InstanceType": {
       "Description": "Type of EC2 instance to launch",
       "Type": "String",
-      "Default": "c3.xlarge"
+      "Default": "m3.large"
     },
     "UserName": {
       "Type": "String",
