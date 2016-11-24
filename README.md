@@ -12,8 +12,11 @@ First you will need to install docker and other dependencies on your
 host machine.
 
 ### mount devices
-    Follow instructions for [mounting volumes][1].
+Follow instructions for [mounting volumes][1].
+
     eg. `sudo mkfs -t xfs /dev/xvdf; sudo mount /dev/xvdf /datastore;`
+
+[1]: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
 
 ### start datomic transactor
 
@@ -119,4 +122,3 @@ In the script on the following page:
 
 	https://github.com/WormBase/db/wiki/Timestamp-Importer
 
-[1]: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
