@@ -89,6 +89,9 @@ else {
    say "\t\tcreate CNAME";
    my $command = "aws route53 change-resource-record-sets --hosted-zone-id";
 
+   say "\tCOMMAND: $command";
+   ($stdout, $stderr) = capture {system($command)};
+   die "error $stderr" if $stderr;
 }
 
 say "Adding CNAME record for $new_name";
