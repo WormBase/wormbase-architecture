@@ -41,9 +41,11 @@ Before installing and using using
 
 ## Usage
 
+The following assumes you've checked out this repository to `~/git/wormbase-architecture`.
 Ensure to activate the virtualenv before using:
 
 ```bash
+cd ~/git/wormbase-architecture
 source wb-cf-transactors/bin/activate
 ```
 
