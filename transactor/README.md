@@ -77,7 +77,7 @@ In the examples below:
 #### Creating a new datomic transactor CloudFormation stack
 
 ```bash
-cf-transactors create "${WS_RELEASE}" "${DATOMIC_VERSION}"
+cf-transactors --cf-stack-name WBTransactor<db version> create "${WS_RELEASE}" "${DATOMIC_VERSION}"
 ```
 
 #### Updating an existing datomic transactor CloudFormation stack
@@ -90,7 +90,7 @@ For example, to update the desired capacity to `1` (assuming it is
 currently set to `2`):
 
 ```bash
-cf-transactors update --desired-capacity=1
+cf-transactors --cf-stack-name WBTransactor<db version> update --desired-capacity=1
 ```
 
 ### AWS CLI usage
@@ -99,7 +99,7 @@ cf-transactors update --desired-capacity=1
 This can be done via the AWS web console, or using the CLI:
 
 ```bash
-aws cloudformation describe-stacks --stack-name WBTransactor
+aws cloudformation describe-stacks --stack-name WBTransactor<db version>
 ```
 
 ## IAM roles for the datomic transactor
