@@ -53,7 +53,6 @@ and optionally setup an alias to the command (or add to `$PATH`):
 
 ```bash
 DATOMIC_VERSION="0.9.5554"
-alias cf-transactors="$HOME/transactor/bin/manage"
 ```
 
 Adding `--help` to the end of the aliased command above will describe
@@ -77,7 +76,8 @@ In the examples below:
 #### Creating a new datomic transactor CloudFormation stack
 
 ```bash
-cf-transactors --cf-stack-name WBTransactor<db version> create "${WS_RELEASE}" "${DATOMIC_VERSION}"
+cd transactor;
+./bin/manage --cf-stack-name WBTransactor<db version> create "${WS_RELEASE}" "${DATOMIC_VERSION}"
 ```
 
 #### Updating an existing datomic transactor CloudFormation stack
