@@ -6,7 +6,7 @@ export DATOMIC_NAME=datomic-pro-${DATOMIC_VERSION}
 export DATOMIC_ZIP=${DATOMIC_NAME}.zip
 export DATOMIC_DEPLOY_DIR=${DATOMIC_HOME}/${DATOMIC_NAME}
 
-printenv
+printenv > /dev/console
 
 if [ -f "${DATOMIC_HOME}/bin/aws" ]
 then
