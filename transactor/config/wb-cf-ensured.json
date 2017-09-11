@@ -384,6 +384,7 @@
       "ap-southeast-2": {"64p":"ami-32cbdf51", "64h":"ami-66647005"},
       "ap-south-1": {"64p":"ami-82126eed", "64h":"ami-723c401d"},
       "sa-east-1": {"64p":"ami-afd7b9c3", "64h":"ami-ab9af4c7"}
+    }
   },
   "Parameters": {
     "InstanceType": {
