@@ -52,7 +52,7 @@ source wb-cf-transactors/bin/activate
 and optionally setup an alias to the command (or add to `$PATH`):
 
 ```bash
-DATOMIC_VERSION="0.9.5554"
+DATOMIC_VERSION="0.9.5561.56"
 ```
 
 Adding `--help` to the end of the aliased command above will describe
