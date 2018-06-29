@@ -30,9 +30,13 @@ daemon --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor \
     -Xmx$XMX \
     $JAVA_OPTS \
     "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
-sleep 20
+echo
+echo "**************** START DEBUG ******************"
 cat ${DATOMIC_DEPLOY_DIR}/datomic-console.log
-aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console.log s3://transactor-logs/wb-names-txtor.log
+echo
+echo "**************** END DEBUG ******************"
+echo
+sleep 20
 
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
 echo "pid is $PID"
