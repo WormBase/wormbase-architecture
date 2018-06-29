@@ -4,8 +4,8 @@
     "AutoScalingDesiredCapacity": "2",
     "DatomicTxAwsS3LogBucket": "wormbase-names-transactor-logs",
     "DatomicTxAwsCloudwatchDimensionValue": "wormbase-names-datomic-transactors",
-    "DatomicTxObjectCacheMax": "256m",
-    "DatomicTxMemoryIndexMax": "32m",
-    "DatomicTxMemoryIndexThreshold": "128m"
+    "DatomicTxMemoryIndexThreshold": "32m",
+    "DatomicTxMemoryIndexMax": "256m",
+    "DatomicTxObjectCacheMax": "128m"
 }
 
