@@ -23,7 +23,7 @@ cd ${DATOMIC_DEPLOY_DIR}
 
 echo "Running transactor with params:"
 echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties"
-aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/
+aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/aws.properties.wb-names
 
 daemon --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor \
     -Xms$XMX \
@@ -31,6 +31,8 @@ daemon --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor \
     $JAVA_OPTS \
     "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
 sleep 20
+
+aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console.log s3://transactor-logs/wb-names-txtor.log
 
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
 echo "pid is $PID"
