@@ -1,8 +1,10 @@
-#!/bin/env python
+#!env python
 # -*- mode: Python; fill-column: 79; comment-column: 50; -*-
 from __future__ import print_function
 
+import atexit
 import functools
+import json
 import logging
 import os
 import re
@@ -104,16 +106,30 @@ def make_session(profile_name):
 
 class CommandContext:
 
+    wb_dp_license_key_path = '/tmp/wp-dp-license.key'
+
     def __init__(self, profile, cf_stack_name,
                  aws_username=None,
-                 verbose=True):
-        self._aws_username = aws_username
-        self.cf_stack_name = cf_stack_name
+                 verbose=True,
+                 settings_path=None):
+        self._aws_username = aws_username or profile
         self.profile = profile
+        if not profile:
+            click.echo('AWS_PROFILE/AWS_DEFAULT_PROFILE '
+                       'environment variabable '
+                       'has not been set',
+                       color='red')
+            raise click.Abort()
+        self.cf_stack_name = cf_stack_name
         self.session = make_session(self.profile)
-        self.wb_dp_license_key_path = '/tmp/wp-dp-license.key'
         self.verbose = verbose
+        self.params = self.read_settings(settings_path)
 
+    @classmethod
+    def read_settings(cls, settings_path):
+        with open(settings_path) as fp:
+            return json.load(fp)
+        
     @property
     def aws_username(self):
         if self._aws_username is None:
@@ -150,12 +166,12 @@ pass_command_context = click.make_pass_decorator(CommandContext)
 
 
 @manage_cmd_group()
+@click.argument('settings_path')
+@click.argument('cf_stack_name')
 @option('--profile',
-        default=os.environ.get('AWS_DEFAULT_PROFILE', 'default'),
+        default=os.environ.get(
+            'AWS_PROFILE', os.environ.get('AWS_DEFAULT_PROFILE', '')),
         help='AWS profile')
-@option('--cf-stack-name',
-        default=DEFAULT_CF_STACK_NAME,
-        help='Name of the CloudFormation stack')
 @option('--aws-username',
         default=None,
         help='AWS username. Same as profile if not specified.')
@@ -163,8 +179,9 @@ pass_command_context = click.make_pass_decorator(CommandContext)
 @log_level_option(default='INFO')
 @click.pass_context
 def manage(ctx,
-           profile,
+           settings_path,
            cf_stack_name,
+           profile,
            aws_username,
            log_level,
            verbose):
@@ -172,11 +189,11 @@ def manage(ctx,
     ctx.obj = CommandContext(profile,
                              cf_stack_name,
                              aws_username=aws_username,
-                             verbose=verbose)
+                             verbose=verbose,
+                             settings_path=settings_path)
     ctx.profile_name = profile
     ctx.session = make_session(ctx.profile_name)
     ctx.cf_stack_name = cf_stack_name
-
 
 def _make_tags(ctx):
     return [dict(Key='CreatedBy', Value=ctx.aws_username),
@@ -198,14 +215,14 @@ def _parameter(name, value=None):
 
 
 @manage.command()
-@template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
-@desired_capacity_option()
-@click.argument('ws_version')
+@click.argument('ddb_table_name')
 @click.argument('datomic_version')
+@desired_capacity_option()
+@template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
 @pass_command_context
 @command_result_reporter
 def create(ctx,
-           ws_version,
+           ddb_table_name,
            datomic_version,
            desired_capacity,
            cf_template_path):
@@ -213,45 +230,45 @@ def create(ctx,
     """
     wb_dp_license_key_text = ctx.fetch_datomic_pro_license_key_text()
     params = [
-        _parameter('WormbaseDataVersion', ws_version),
+        _parameter('DDBTableName', ddb_table_name),
         _parameter('DatomicLicenseKey', wb_dp_license_key_text),
         _parameter('DatomicVersion', datomic_version),
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
     ]
+    params.extend(_parameter(k, v)
+                  for (k, v) in  ctx.params.items())
     kw = dict(StackName=ctx.cf_stack_name,
               TemplateBody=ctx.read_file(cf_template_path),
               Parameters=params,
-              Tags=_make_tags(ctx)
-    )
+              Tags=_make_tags(ctx))
     return ctx.cf_resource.create_stack(**kw)
 
 
 @manage.command()
-@desired_capacity_option()
-@template_path_option(default=None)
-@option('--ws-version',
-        default=None,
-        help=('WormBase data version e.g "WS255". '
-              'If not specified, uses currently configured version.'))
+@click.argument('ddb_table_name')
 @option('--datomic-version',
         default=None,
         type=str,
         help='If not specified, use existing version')
+@template_path_option(default=None)
+@desired_capacity_option()
 @pass_command_context
 @command_result_reporter
 def update(ctx,
-           ws_version,
+           ddb_table_name,
            datomic_version,
-           cf_template_path,
-           desired_capacity):
+           desired_capacity,
+           cf_template_path):
     """Update the CloudFormation configuration of the Datomic transactor(s).
     """
-    params = [
-        _parameter('WormbaseDataVersion', value=ws_version),
+    params = ctx.params
+    params.extend([
+        _parameter('UserName', ctx.profile_name),
+        _parameter('DDBTableName', ddb_table_name),
         _parameter('DatomicLicenseKey'),
-        _parameter('DatomicVersion', value=datomic_version),
-        _parameter('AutoScalingDesiredCapacity', value=desired_capacity),
-    ]
+        _parameter('DatomicVersion', datomic_version),
+        _parameter('AutoScalingDesiredCapacity', desired_capacity),
+    ])
     kw = dict(StackName=ctx.cf_stack_name,
               Tags=_make_tags(ctx),
               Parameters=params)
@@ -290,13 +307,21 @@ def status(ctx):
 
 @manage.command('validate-template')
 @template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
-@pass_command_context
 @command_result_reporter
+@pass_command_context
 def validate_template(ctx, cf_template_path):
     """Validate the CloudFormation JSON template."""
     result = ctx.cf_client.validate_template(
         TemplateBody=ctx.read_file(cf_template_path))
     return result
+
+
+@atexit.register
+def clean_up():
+    try:
+        os.remove(CommandContext.wb_dp_license_key_path)
+    except IOError:
+        pass
 
 
 if __name__ == '__main__':
