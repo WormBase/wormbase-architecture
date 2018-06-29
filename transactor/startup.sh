@@ -31,7 +31,7 @@ daemon --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor \
     $JAVA_OPTS \
     "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
 sleep 20
-
+cat ${DATOMIC_DEPLOY_DIR}/datomic-console.log
 aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console.log s3://transactor-logs/wb-names-txtor.log
 
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
