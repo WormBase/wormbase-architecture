@@ -72,28 +72,27 @@ RUN apt-get update && \
      libgdbm3 \
      ncurses-dev
 
-COPY ACEDB-source.4.9.39.tar.gz /root/acedb/ACEDB-source.4.9.39.tar.gz
+COPY acedb-4.9.52.tgz /root/acedb/acedb-4.9.52.tgz
 
-CMD chmod 777 /root/acedb/ACEDB-source.4.9.39.tar.gz
+CMD chmod 777 /root/acedb/acedb-4.9.52.tgz
 
 ENV ACEDB_MACHINE LINUX_4
 
 RUN cd /root/acedb; \
-    tar xzf ACEDB-source*
+    tar xzf acedb-4.9.52.tgz
 
-RUN cd /root/acedb/w3rdparty; ./include-config glib-2.0 gtk2.0;
+#RUN cd /root/acedb/w3rdparty; ./include-config glib-2.0 gtk2.0;
 
-RUN cd /root/acedb; \
-    make xace; \
-    make tace; \ 
-    make saceserver; \
-    make sgifaceserver; \
-    make saceclient
+#RUN cd /root/acedb; \
+#    make xace; \
+#    make tace; \ 
+#    make saceserver; \
+#    make sgifaceserver; \
+#    make saceclient
 
-
-RUN cd ~/acedb; \
-    ln -s bin.LINUX_4 bin; \
-    sudo chown root:root ~/acedb/bin/*
+#RUN cd ~/acedb; \
+#    ln -s bin.LINUX_4 ./*; \
+#    sudo chown root:root ~/acedb/*
 
 #test ace
 #CMD ["/root/acedb/bin/sgifaceserver", "/datastore/acedb/data/WS250", "5000"]; 
