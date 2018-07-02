@@ -418,9 +418,6 @@
       "i2.2xlarge": {
         "Arch": "64h"
       },
-      "t2.micro": {
-        "Arch": "64h"
-      },
       "t2.small": {
         "Arch": "64h"
       }
@@ -464,7 +461,8 @@
     },
     "JavaOpts": {
       "Description": "Options passed to Java launcher",
-      "Type": "String"
+      "Type": "String",
+      "Default": ""
     },
     "SecurityGroups": {
       "Description": "Preexisting security groups.",
@@ -492,6 +490,26 @@
     "AutoScalingDesiredCapacity": {
       "Type": "String",
       "Description": "The number of EC2 instances desired to be in service."
+    },
+    "DatomicTxAwsCloudwatchDimensionValue": {
+      "Type": "String",
+      "Description": "The clould watch dimension."
+    },
+    "DatomicTxAwsS3LogBucket": {
+      "Type": "String",
+      "Description": "The S3 Log bucket to store logs in."
+    },
+    "DatomicTxMemoryIndexMax": {
+      "Type": "String",
+      "Description": "Memory Index Max setting for the Datomic Transactor."
+    },
+    "DatomicTxMemoryIndexThreshold": {
+      "Type": "String",
+      "Description": "Memory Index Threshold setting for the Datomic Transactor."
+    },
+    "DatomicTxObjectCacheMax": {
+      "Type": "String",
+      "Description": "Object Cache Max setting for the Datomic Transactor."
     }
   },
   "Description": "Datomic Transactor Template"

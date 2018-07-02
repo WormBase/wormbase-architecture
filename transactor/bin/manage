@@ -74,6 +74,7 @@ desired_capacity_option = functools.partial(
 template_path_option = functools.partial(
     option,
     '--cf-template-path',
+    default=DEFAULT_CF_TEMPLATE_PATH,
     type=click.Path(exists=True),
     help='Path to CloudFormation template file.')
 
@@ -218,7 +219,7 @@ def _parameter(name, value=None):
 @click.argument('ddb_table_name')
 @click.argument('datomic_version')
 @desired_capacity_option()
-@template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
+@template_path_option()
 @pass_command_context
 @command_result_reporter
 def create(ctx,
@@ -306,9 +307,9 @@ def status(ctx):
 
 
 @manage.command('validate-template')
-@template_path_option(default=DEFAULT_CF_TEMPLATE_PATH)
-@command_result_reporter
+@template_path_option()
 @pass_command_context
+@command_result_reporter
 def validate_template(ctx, cf_template_path):
     """Validate the CloudFormation JSON template."""
     result = ctx.cf_client.validate_template(

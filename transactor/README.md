@@ -69,7 +69,7 @@ The following executable is used to manage transactors:
 bin/manage
 ```
 
-This command expects two positional arguments (SETTINGS and CF_STACK_NAME), 
+This command expects two positional arguments (SETTINGS and CF_STACK_NAME),
 followed by a sub-command, followed by more positional and optional arguments.
 
 Adding `--help` to the end of the manage command (and its sub
@@ -99,7 +99,6 @@ SETTINGS="config/web-prod-params.json"
 
 bin/manage $SETTINGS $CF_STACK_NAME \
            create  \
-           --cf-template-path $CF_TEMPLATE_PATH \
            --desired-capacity $DESIRED_CAPACITY \
            $DDB_TABLE \
            $DATOMIC_VERISON
@@ -117,7 +116,6 @@ SETTINGS="config/web-prod-params.json"
 
 bin/manage $SETTINGS $CF_STACK_NAME \
            create  \
-           --cf-template-path $CF_TEMPLATE_PATH \
            --desired-capacity $DESIRED_CAPACITY \
            $DDB_TABLE \
            $DATOMIC_VERISON
