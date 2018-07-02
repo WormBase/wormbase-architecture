@@ -261,14 +261,14 @@ def update(ctx,
            cf_template_path):
     """Update the CloudFormation configuration of the Datomic transactor(s).
     """
-    params = ctx.params
-    params.extend([
-        _parameter('UserName', ctx.profile_name),
+    params = [
         _parameter('DDBTableName', ddb_table_name),
         _parameter('DatomicLicenseKey'),
         _parameter('DatomicVersion', datomic_version),
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
-    ])
+    ]
+    params.extend(_parameter(k, v)
+                  for (k, v) in  ctx.params.items())
     kw = dict(StackName=ctx.cf_stack_name,
               Tags=_make_tags(ctx),
               Parameters=params)

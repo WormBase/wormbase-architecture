@@ -1,7 +1,6 @@
 {
     "InstanceType": "c3.xlarge",
     "Xmx": "2626m",
-    "AutoScalingDesiredCapacity": "1",
     "DatomicTxAwsS3LogBucket": "transactor-logs",
     "DatomicTxAwsCloudwatchDimensionValue": "wormbase-datomic-transactors",
     "DatomicTxObjectCacheMax": "512m",
