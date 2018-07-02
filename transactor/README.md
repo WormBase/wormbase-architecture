@@ -1,11 +1,11 @@
 # Datomic Transactors (AWS CloudFormation Stack)
 
-## Pre-requistists
+## Pre-requisites
 Ensure you have configured your AWS environment; typically by ensuring
 the following environment variables are set:
 
    * AWS_PROFILE / AWS_DEFAULT_PROFILE
-   * AWS_ACESS_KEY
+   * AWS_ACCESS_KEY
    * AWS_SECRET_ACCESS_KEY
    * AWS_DEFAULT_REGION
 
@@ -17,7 +17,7 @@ The _transactor_ folder contains all required files.
 
 The Datomic transactors will run within the WormBase VPC; It is
 important to note that all relevant resources (Security Group(s),
-Subnet and Availablility Zones) should be configured appropriately.
+Subnet and Availability Zones) should be configured appropriately.
 
 The CloudFormation configuration used by this transactor setup is
 based upon the JSON template using the Datomic tools, but changed to
@@ -37,6 +37,11 @@ virtualenv:
 
 ```bash
 virtualenv -p python2 wb-cf-transactors
+```
+
+Activate the virtualenv:
+
+```bash
 source wb-cf-transactors/bin/activate
 ```
 
@@ -45,8 +50,6 @@ In the same directory as this file you're reading:
 ```
 pip install -r requirements.txt
 ```
-
-Before installing and using using
 
 ## Usage
 
@@ -69,7 +72,6 @@ bin/manage
 This command expects two positional arguments (SETTINGS and CF_STACK_NAME), 
 followed by a sub-command, followed by more positional and optional arguments.
 
-
 Adding `--help` to the end of the manage command (and its sub
 commands) will describe the available options and any required
 arguments.
@@ -83,9 +85,6 @@ detailing specific instance type and datomic memory requirements.
 ### Examples of running the "create" for each project
 
 ### CloudFormation stack operations for managing the datomic transactor
-binThe stack was created the _very first_ time using the datomic tools'
-_create-cf-stack_ command.
-
 Assuming this repository is checked-out to the home directory of the
 current user.
 
