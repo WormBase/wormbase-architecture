@@ -1,10 +1,10 @@
 {
-    "InstanceType": "c3.xlarge",
+    "InstanceType": "c3.large",
     "Xmx": "2626m",
     "DatomicTxAwsS3LogBucket": "transactor-logs",
     "DatomicTxAwsCloudwatchDimensionValue": "wormbase-datomic-transactors",
-    "DatomicTxObjectCacheMax": "512m",
-    "DatomicTxMemoryIndexMax": "32m",
-    "DatomicTxMemoryIndexThreshold": "1g"
+    "DatomicTxMemoryIndexMax": "512m",
+    "DatomicTxMemoryIndexThreshold": "32m",
+    "DatomicTxObjectCacheMax": "1g"
 }
 
