@@ -82,7 +82,7 @@ Transactors may managed for more than one project.
 Each project should have its own settings file in the `./config` directory,
 detailing specific instance type and datomic memory requirements.
 
-### Examples of running the "create" for each project
+### Examples of running the "create" command for each project
 
 ### CloudFormation stack operations for managing the datomic transactor
 Assuming this repository is checked-out to the home directory of the
