@@ -1,12 +1,21 @@
-# Datomic Transactor (AWS CloudFormation Stack)
+# Datomic Transactors (AWS CloudFormation Stack)
 
-The transactor is configured using an AWS CloudFormation template,
+## Pre-requistists
+Ensure you have configured your AWS environment; typically by ensuring
+the following environment variables are set:
+
+   * AWS_PROFILE / AWS_DEFAULT_PROFILE
+   * AWS_ACESS_KEY
+   * AWS_SECRET_ACCESS_KEY
+   * AWS_DEFAULT_REGION
+
+Transactors are configured using an AWS CloudFormation template,
 which was initially generating using the datomic "Appliance" AMI,
 using instructions from the Datomic [AWS docs][1].
 
 The _transactor_ folder contains all required files.
 
-The Datomic transactor will run within the WormBase VPC; It's
+The Datomic transactors will run within the WormBase VPC; It is
 important to note that all relevant resources (Security Group(s),
 Subnet and Availablility Zones) should be configured appropriately.
 
@@ -20,7 +29,7 @@ accommodate the following features:
 
 Please note the following: #5
 
-### Installation
+## Installation
 
 Install with Python2 or Python3, by [installing pip] and `virtualenv`
 if not already installed, then issue the following command to create a
@@ -49,48 +58,70 @@ cd ~/git/wormbase-architecture
 source wb-cf-transactors/bin/activate
 ```
 
-and optionally setup an alias to the command (or add to `$PATH`):
+### Manage command
+
+The following executable is used to manage transactors:
 
 ```bash
-DATOMIC_VERSION="0.9.5697"
+bin/manage
 ```
 
-Adding `--help` to the end of the aliased command above will describe
-the available options and any required arguments.
+This command expects two positional arguments (SETTINGS and CF_STACK_NAME), 
+followed by a sub-command, followed by more positional and optional arguments.
+
+
+Adding `--help` to the end of the manage command (and its sub
+commands) will describe the available options and any required
+arguments.
+
+Transactors may managed for more than one project.
+(Currently  web production and the "names" projects).
+
+Each project should have its own settings file in the `./config` directory,
+detailing specific instance type and datomic memory requirements.
+
+### Examples of running the "create" for each project
 
 ### CloudFormation stack operations for managing the datomic transactor
-The stack was created the _very first_ time using the datomic tools'
+binThe stack was created the _very first_ time using the datomic tools'
 _create-cf-stack_ command.
 
 Assuming this repository is checked-out to the home directory of the
 current user.
 
-In the examples below:
-
-  * `$WS_RELEASE` should be the name of the data release (and DynamoDB
-    table) that you wish to use.
-
-  * `$DESIRED_CAPACITY` should be the number of transactors desired to
-    be in service (Currently this is permitted to be 1 or 2).
-
-#### Creating a new datomic transactor CloudFormation stack
+#### Main WormBase Migration DB
 
 ```bash
-cd transactor;
-./bin/manage --cf-stack-name WBTransactor<db version> create "${WS_RELEASE}" "${DATOMIC_VERSION}"
+DDB_TABLE="WS265"
+CF_STACK_NAME="WBTransactorWS265"
+DATOMIC_VERSION="0.9.5697"
+DESIRED_CAPACITY=1
+SETTINGS="config/web-prod-params.json"
+
+bin/manage $SETTINGS $CF_STACK_NAME \
+           create  \
+           --cf-template-path $CF_TEMPLATE_PATH \
+           --desired-capacity $DESIRED_CAPACITY \
+           $DDB_TABLE \
+           $DATOMIC_VERISON
 ```
 
-#### Updating an existing datomic transactor CloudFormation stack
+#### Names DB
 
-Currently, you can update any combination of the options available,
-but at least one of `$WS_RELEASE`, `$DESIRED_CAPACITY` or
-`$DATOMIC_VERSION` must be supplied for an update command to proceed.
-
-For example, to update the desired capacity to `1` (assuming it is
-currently set to `2`):
 
 ```bash
-cf-transactors --cf-stack-name WBTransactor<db version> update --desired-capacity=1
+DDB_TABLE="WSNames"
+CF_STACK_NAME="WBNamesTransactor"
+DATOMIC_VERSION="0.9.5697"
+DESIRED_CAPACITY=2
+SETTINGS="config/web-prod-params.json"
+
+bin/manage $SETTINGS $CF_STACK_NAME \
+           create  \
+           --cf-template-path $CF_TEMPLATE_PATH \
+           --desired-capacity $DESIRED_CAPACITY \
+           $DDB_TABLE \
+           $DATOMIC_VERISON
 ```
 
 ### AWS CLI usage
