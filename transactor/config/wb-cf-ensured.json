@@ -190,7 +190,17 @@
                 "host=`curl http://169.254.169.254/latest/meta-data/local-ipv4`",
                 "alt-host=`curl http://169.254.169.254/latest/meta-data/public-ipv4`",
                 "port=4334",
-                "aws-cloudwatch-dimension-value=wormbase-datomic-transactors",
+		{
+		    "Fn::Join": [
+ 		      "=",
+		      [
+                        "aws-clouldwatch-dimension",
+                        {
+                          "Ref": "DatomicTxAwsCloudwatchDimensionValue"
+                        }
+                      ]
+                   ]
+                },
                 "aws-cloudwatch-region=us-east-1",
                 "aws-dynamodb-region=us-east-1",
                 {
@@ -199,18 +209,58 @@
                     [
                       "aws-dynamodb-table",
                       {
-                        "Ref": "WormbaseDataVersion"
+                        "Ref": "DDBTableName"
                       }
                     ]
                   ]
                 },
                 "aws-peer-role=datomic-aws-peer",
-                "aws-s3-log-bucket-id=transactor-logs",
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "aws-s3-log-bucket",
+                      {
+                        "Ref": "DatomicTxAwsS3LogBucket"
+                      }
+                    ]
+                  ]
+                },
                 "aws-transactor-role=datomic-aws-transactor",
                 "protocol=ddb",
-                "memory-index-max=512m",
-                "memory-index-threshold=32m",
-                "object-cache-max=1g",
+		{
+		    "Fn::Join": [
+ 		      "=",
+		      [
+                        "memory-index-max",
+                        {
+                          "Ref": "DatomicTxMemoryIndexMax"
+                        }
+                      ]
+                   ]
+                },
+		{
+		    "Fn::Join": [
+ 		      "=",
+		      [
+                        "memory-index-threshold",
+                        {
+                          "Ref": "DatomicTxMemoryIndexThreshold"
+                        }
+                      ]
+                   ]
+                },
+		{
+		    "Fn::Join": [
+ 		      "=",
+		      [
+                        "object-cache-max",
+                        {
+                          "Ref": "DatomicTxObjectCacheMax"
+                        }
+                      ]
+                   ]
+                },
                 {
                   "Fn::Join": [
                     "=",
@@ -367,6 +417,9 @@
       },
       "i2.2xlarge": {
         "Arch": "64h"
+      },
+      "t2.small": {
+        "Arch": "64h"
       }
     },
     "AWSRegionArch2AMI": {
@@ -389,12 +442,7 @@
   "Parameters": {
     "InstanceType": {
       "Description": "Type of EC2 instance to launch",
-      "Type": "String",
-      "Default": "c3.large"
-    },
-    "UserName": {
-      "Type": "String",
-      "Default": "awright"
+      "Type": "String"
     },
     "InstanceProfile": {
       "Description": "Preexisting IAM role / instance profile",
@@ -404,8 +452,7 @@
     "Xmx": {
       "Description": "Xmx setting for the JVM",
       "Type": "String",
-      "AllowedPattern": "\\d+[GgMm]",
-      "Default": "2625m"
+      "AllowedPattern": "\\d+[GgMm]"
     },
     "InstanceMonitoring": {
       "Description": "Detailed monitoring for store instances?",
@@ -435,16 +482,34 @@
       "NoEcho": "true",
       "Description": "Wormbase's datomic-pro license key"
     },
-    "WormbaseDataVersion": {
+    "DDBTableName": {
       "Type": "String",
-      "AllowedPattern": "WS\\d{3,}",
-      "ConstraintDescription": "Parameter must have a prefix of \"WS\"",
-      "Description": "Wormbase Data release version, used as DynamoDB table name",
+      "Description": "DynamoDB table name",
       "MinLength": 5
     },
     "AutoScalingDesiredCapacity": {
       "Type": "String",
       "Description": "The number of EC2 instances desired to be in service."
+    },
+    "DatomicTxAwsCloudwatchDimensionValue": {
+      "Type": "String",
+      "Description": "The clould watch dimension."
+    },
+    "DatomicTxAwsS3LogBucket": {
+      "Type": "String",
+      "Description": "The S3 Log bucket to store logs in."
+    },
+    "DatomicTxMemoryIndexMax": {
+      "Type": "String",
+      "Description": "Memory Index Max setting for the Datomic Transactor."
+    },
+    "DatomicTxMemoryIndexThreshold": {
+      "Type": "String",
+      "Description": "Memory Index Threshold setting for the Datomic Transactor."
+    },
+    "DatomicTxObjectCacheMax": {
+      "Type": "String",
+      "Description": "Object Cache Max setting for the Datomic Transactor."
     }
   },
   "Description": "Datomic Transactor Template"

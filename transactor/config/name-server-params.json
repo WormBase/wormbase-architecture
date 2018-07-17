@@ -1,0 +1,10 @@
+{
+    "InstanceType": "t2.small",
+    "Xmx": "1g",
+    "DatomicTxAwsS3LogBucket": "wormbase-names-transactor-logs",
+    "DatomicTxAwsCloudwatchDimensionValue": "wormbase-names-datomic-transactors",
+    "DatomicTxMemoryIndexThreshold": "32m",
+    "DatomicTxMemoryIndexMax": "256m",
+    "DatomicTxObjectCacheMax": "128m"
+}
+
