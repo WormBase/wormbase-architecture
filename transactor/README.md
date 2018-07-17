@@ -118,7 +118,7 @@ bin/manage $SETTINGS $CF_STACK_NAME \
            create  \
            --desired-capacity $DESIRED_CAPACITY \
            $DDB_TABLE \
-           $DATOMIC_VERISON
+           $DATOMIC_VERSION
 ```
 
 ### AWS CLI usage
