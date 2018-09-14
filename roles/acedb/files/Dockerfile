@@ -58,9 +58,9 @@ RUN useradd -g acedb acedb
 RUN mkdir -p /root/acedb;
 WORKDIR /root/acedb
 
-COPY acedb-4.9.52.tgz .
-CMD chmod 777 acedb-4.9.52.tgz
-RUN tar xzf acedb-4.9.52.tgz
+ADD acedb-4.9.52.tgz .
+
+COPY entrypoint.sh .
 
 ENV ACEDB_MACHINE LINUX_4
 
@@ -68,5 +68,4 @@ ENV ACEDB_MACHINE LINUX_4
 WORKDIR /root/acedb
 
 #test ace
-ENTRYPOINT ["./acedb-4.9.52/sgifaceserver"]
-CMD ["./wormbase", "2005"]
+CMD ["./entrypoint.sh", "./acedb-4.9.52/sgifaceserver", "wormbase", "2005"]
