@@ -12,30 +12,6 @@ RUN \
   apt-get install -y byobu curl git htop man unzip vim wget tree&& \
   rm -rf /var/lib/apt/lists/*
 
-#Adding user
-RUN groupadd acedb
-RUN useradd -g acedb -d /usr/local/wormbase/acedb acedb
-
-# Set environment variables.
-ENV HOME /root
-
-# Define working directory.
-WORKDIR /data
-
-
-#Adding directories
-RUN cd /usr/local; \
-    sudo mkdir wormbase; \
-    sudo chown root:wormbase wormbase; \
-    sudo chmod 2775 wormbase
-
-RUN mkdir -p /root/acedb;
-
-
-#RUN mkdir -p /root/acedb/wormbase;
-#RUN mkdir -p /root/acedb/wormbase/database;
-#RUN mkdir -p /root/acedb/wormbase/wspec;
-
 ##Installing acedb
 RUN apt-get update && \
     apt-get install -y libgtk2.0-0 libgtk2.0-dev libglib2.0-dev byacc csh \
@@ -72,33 +48,25 @@ RUN apt-get update && \
      libgdbm3 \
      ncurses-dev
 
-COPY acedb-4.9.52.tgz /root/acedb/acedb-4.9.52.tgz
-
-CMD chmod 777 /root/acedb/acedb-4.9.52.tgz
-
-ENV ACEDB_MACHINE LINUX_4
-
-RUN cd /root/acedb; \
-    tar xzf acedb-4.9.52.tgz
-
-#RUN cd /root/acedb/w3rdparty; ./include-config glib-2.0 gtk2.0;
-
-#RUN cd /root/acedb; \
-#    make xace; \
-#    make tace; \ 
-#    make saceserver; \
-#    make sgifaceserver; \
-#    make saceclient
-
-#RUN cd ~/acedb; \
-#    ln -s bin.LINUX_4 ./*; \
-#    sudo chown root:root ~/acedb/*
-
-#test ace
-#CMD ["/root/acedb/bin/sgifaceserver", "/datastore/acedb/data/WS250", "5000"]; 
-
 # Set environment variables.
 ENV HOME /root
 
+#Adding user
+RUN groupadd acedb
+RUN useradd -g acedb acedb
+
+RUN mkdir -p /root/acedb;
+WORKDIR /root/acedb
+
+COPY acedb-4.9.52.tgz .
+CMD chmod 777 acedb-4.9.52.tgz
+RUN tar xzf acedb-4.9.52.tgz
+
+ENV ACEDB_MACHINE LINUX_4
+
 # Define working directory.
-WORKDIR /root
+WORKDIR /root/acedb
+
+#test ace
+ENTRYPOINT ["./acedb-4.9.52/sgifaceserver"]
+CMD ["./wormbase", "2005"]
