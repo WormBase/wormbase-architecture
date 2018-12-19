@@ -218,6 +218,11 @@ def _parameter(name, value=None):
 @manage.command()
 @click.argument('ddb_table_name')
 @click.argument('datomic_version')
+@option('--datomic-ext-classpath-script',
+        default=None,
+        type=str,
+        help=('Optional arguments to custom script to download dependencies '
+              'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
 @desired_capacity_option()
 @template_path_option()
 @pass_command_context
@@ -225,6 +230,7 @@ def _parameter(name, value=None):
 def create(ctx,
            ddb_table_name,
            datomic_version,
+           datomic_ext_classpath_script,
            desired_capacity,
            cf_template_path):
     """Create a new CloudFormation stack for Datomic tranactor(s).
@@ -236,6 +242,8 @@ def create(ctx,
         _parameter('DatomicVersion', datomic_version),
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
     ]
+    if datomic_ext_classpath_script:
+        params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
     params.extend(_parameter(k, v)
                   for (k, v) in  ctx.params.items())
     kw = dict(StackName=ctx.cf_stack_name,
@@ -251,13 +259,19 @@ def create(ctx,
         default=None,
         type=str,
         help='If not specified, use existing version')
-@template_path_option(default=None)
+@option('--datomic-ext-classpath-script',
+        default=None,
+        type=str,
+        help=('Optional arguments to custom script to download dependencies '
+              'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
 @desired_capacity_option()
+@template_path_option(default=None)
 @pass_command_context
 @command_result_reporter
 def update(ctx,
            ddb_table_name,
            datomic_version,
+           datomic_ext_classpath_script,
            desired_capacity,
            cf_template_path):
     """Update the CloudFormation configuration of the Datomic transactor(s).
@@ -268,6 +282,8 @@ def update(ctx,
         _parameter('DatomicVersion', datomic_version),
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
     ]
+    if datomic_ext_classpath_script:
+        params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
     params.extend(_parameter(k, v)
                   for (k, v) in  ctx.params.items())
     kw = dict(StackName=ctx.cf_stack_name,
