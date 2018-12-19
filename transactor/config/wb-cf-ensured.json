@@ -185,6 +185,21 @@
                     ]
                   ]
                 },
+		{
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export DATOMIC_EXT_CLASSPATH_SCRIPT",
+                      {
+                        "Ref": "DatomicExtClasspathScript"
+                      }
+		    ]
+		  ]
+		},
+                "[ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ] && wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT",
+                "[ -f /tmp/build_datomic_ext_classpath.sh ] && chmod u+x /tmp/build_datomic_ext_classpath.sh",
+                "[ -f /tmp/build_datomic_ext_classpath.sh ] && export DATOMIC_EXT_CLASSPATH=\"$(/tmp/build_datomic_ext_classpath.sh)\"",
+                "echo \"DATOMIC_EXT_CLASSPATH=\"${DATOMIC_EXT_CLASSPATH}\"\"",
                 "cd /datomic",
                 "cat <<EOF >aws.properties",
                 "host=`curl http://169.254.169.254/latest/meta-data/local-ipv4`",
@@ -481,6 +496,11 @@
       "Type": "String",
       "NoEcho": "true",
       "Description": "Wormbase's datomic-pro license key"
+    },
+    "DatomicExtClasspathScript": {
+      "Default": "",
+      "Description": "The script for building the DATOMIC_EXT_CLASSPATH.",
+      "Type": "String"
     },
     "DDBTableName": {
       "Type": "String",
