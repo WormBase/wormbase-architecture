@@ -6,6 +6,11 @@ export DATOMIC_NAME=datomic-pro-${DATOMIC_VERSION}
 export DATOMIC_ZIP=${DATOMIC_NAME}.zip
 export DATOMIC_DEPLOY_DIR=${DATOMIC_HOME}/${DATOMIC_NAME}
 
+[ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ] && wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
+[ -f /tmp/build_datomic_ext_classpath.sh ] && chmod u+x /tmp/build_datomic_ext_classpath.sh
+[ -f /tmp/build_datomic_ext_classpath.sh ] && \
+    export DATOMIC_EXT_CLASSPATH="$(su - datomic -c CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh)"
+
 printenv > /dev/console
 
 if [ -f "${DATOMIC_HOME}/bin/aws" ]
