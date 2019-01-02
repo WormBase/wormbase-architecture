@@ -8,13 +8,19 @@ export DATOMIC_DEPLOY_DIR=${DATOMIC_HOME}/${DATOMIC_NAME}
 
 DEPS_INSTALLER=/tmp/install_tx_deps.sh
 
-[ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ] && wget -O $DEPS_INSTALLER $DATOMIC_TRANSACTOR_DEPS_SCRIPT
-[ -f $DEPS_INSTALLER ] && chmod +x $DEPS_INSTALLER && $DEPS_INSTALLER
-
-[ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ] && wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
-[ -f /tmp/build_datomic_ext_classpath.sh ] && chmod +x /tmp/build_datomic_ext_classpath.sh
-[ -f /tmp/build_datomic_ext_classpath.sh ] && \
-    export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh')"
+if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
+    wget -O $DEPS_INSTALLER $DATOMIC_TRANSACTOR_DEPS_SCRIPT
+    chmod +x $DEPS_INSTALLER
+    /bin/bash $DEPS_INSTALLER
+    if [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ]; then
+	wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
+	chmod +x /tmp/build_datomic_ext_classpath.sh
+	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh')"
+    fi
+else
+    echo "DATOMIC_TRANSACTOR_DEPS_SCRIPT was not set"
+    echo "Not setting DATOMIC_EXT_CLASSPATH"
+fi
 
 printenv > /dev/console
 
