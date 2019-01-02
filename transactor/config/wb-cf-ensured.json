@@ -185,6 +185,28 @@
                     ]
                   ]
                 },
+		{
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export DATOMIC_EXT_CLASSPATH_SCRIPT",
+                      {
+                        "Ref": "DatomicExtClasspathScript"
+                      }
+		    ]
+		  ]
+		},
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export DATOMIC_TRANSACTOR_DEPS_SCRIPT",
+		      {
+                        "Ref": "DatomicTransactorDepsScript"
+                      }
+		    ]
+                  ]
+		},
                 "cd /datomic",
                 "cat <<EOF >aws.properties",
                 "host=`curl http://169.254.169.254/latest/meta-data/local-ipv4`",
@@ -274,7 +296,7 @@
                 },
                 "encrypt-channel=false",
                 "EOF",
-                "AWS_ACCESS_KEY_ID=\"${DATOMIC_READ_DEPLOY_ACCESS_KEY_ID}\" AWS_SECRET_ACCESS_KEY=\"${DATOMIC_READ_DEPLOY_AWS_SECRET_KEY}\" aws s3 cp \"s3://${DATOMIC_DEPLOY_BUCKET}/${DATOMIC_VERSION}/startup.sh\" startup.sh",
+                "wget -O startup.sh https://raw.githubusercontent.com/WormBase/wormbase-architecture/feature/set-datomic-ext-classpath-for-transactor/transactor/startup.sh",
                 "chmod 744 aws.properties",
                 "chmod 500 startup.sh",
                 {
@@ -481,6 +503,15 @@
       "Type": "String",
       "NoEcho": "true",
       "Description": "Wormbase's datomic-pro license key"
+    },
+    "DatomicTransactorDepsScript": {
+      "Type": "String",
+      "Description": "URL to script to install deps for the datomic transactor"
+    },
+    "DatomicExtClasspathScript": {
+      "Default": "",
+      "Description": "The script for building the DATOMIC_EXT_CLASSPATH.",
+      "Type": "String"
     },
     "DDBTableName": {
       "Type": "String",
