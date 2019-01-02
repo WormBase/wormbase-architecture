@@ -6,13 +6,15 @@ export DATOMIC_NAME=datomic-pro-${DATOMIC_VERSION}
 export DATOMIC_ZIP=${DATOMIC_NAME}.zip
 export DATOMIC_DEPLOY_DIR=${DATOMIC_HOME}/${DATOMIC_NAME}
 
+DEPS_INSTALLER=/tmp/install_tx_deps.sh
+
+[ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ] && wget -O $DEPS_INSTALLER $DATOMIC_TRANSACTOR_DEPS_SCRIPT
+[ -f $DEPS_INSTALLER ] && chmod +x $DEPS_INSTALLER && $DEPS_INSTALLER
+
 [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ] && wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
 [ -f /tmp/build_datomic_ext_classpath.sh ] && chmod +x /tmp/build_datomic_ext_classpath.sh
 [ -f /tmp/build_datomic_ext_classpath.sh ] && \
     export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh')"
-
-[ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ] && wget -O /tmp/install_tx_deps.sh $DATOMIC_TRANSACTOR_DEPS_SCRIPT
-[ -f /tmp/intall_tx_deps.sh ] && chmod +x /tmp/intall_tx_deps.sh && /tmp/install_tx_deps.sh    
 
 printenv > /dev/console
 
