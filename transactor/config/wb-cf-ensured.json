@@ -296,7 +296,7 @@
                 },
                 "encrypt-channel=false",
                 "EOF",
-                "wget -O startup.sh https://raw.githubusercontent.com/WormBase/wormbase-architecture/feature/set-datomic-ext-classpath-for-transactor/transactor/startup.sh",
+                "wget -O startup.sh https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh",
                 "chmod 744 aws.properties",
                 "chmod 500 startup.sh",
                 {
