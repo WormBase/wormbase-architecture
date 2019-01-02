@@ -218,6 +218,10 @@ def _parameter(name, value=None):
 @manage.command()
 @click.argument('ddb_table_name')
 @click.argument('datomic_version')
+@option('--datomic-transactor-deps-script',
+        default=None,
+        type=str,
+        help=('Optional custom script to install dependencies for a trasactor.'))
 @option('--datomic-ext-classpath-script',
         default=None,
         type=str,
@@ -230,6 +234,7 @@ def _parameter(name, value=None):
 def create(ctx,
            ddb_table_name,
            datomic_version,
+           datomic_transactor_deps_script,
            datomic_ext_classpath_script,
            desired_capacity,
            cf_template_path):
@@ -244,6 +249,8 @@ def create(ctx,
     ]
     if datomic_ext_classpath_script:
         params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
+    if datomic_transactor_deps_script:
+        params += [_parameter('DatomicTransactorDepsScript', datomic_transactor_deps_script)]
     params.extend(_parameter(k, v)
                   for (k, v) in  ctx.params.items())
     kw = dict(StackName=ctx.cf_stack_name,
@@ -259,6 +266,10 @@ def create(ctx,
         default=None,
         type=str,
         help='If not specified, use existing version')
+@option('--datomic-transactor-deps-script',
+        default=None,
+        type=str,
+        help=('Optional custom script to install dependencies for a trasactor.'))
 @option('--datomic-ext-classpath-script',
         default=None,
         type=str,
@@ -271,6 +282,7 @@ def create(ctx,
 def update(ctx,
            ddb_table_name,
            datomic_version,
+           datomic_transactor_deps_script,
            datomic_ext_classpath_script,
            desired_capacity,
            cf_template_path):
@@ -282,6 +294,8 @@ def update(ctx,
         _parameter('DatomicVersion', datomic_version),
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
     ]
+    if datomic_transactor_deps_script:
+        params += [_parameter('DatomicTransactorDepsScript', datomic_transactor_deps_script)]
     if datomic_ext_classpath_script:
         params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
     params.extend(_parameter(k, v)

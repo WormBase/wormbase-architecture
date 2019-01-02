@@ -11,6 +11,9 @@ export DATOMIC_DEPLOY_DIR=${DATOMIC_HOME}/${DATOMIC_NAME}
 [ -f /tmp/build_datomic_ext_classpath.sh ] && \
     export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh')"
 
+[ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ] && wget -O /tmp/install_tx_deps.sh $DATOMIC_TRANSACTOR_DEPS_SCRIPT
+[ -f /tmp/intall_tx_deps.sh ] && chmod +x /tmp/intall_tx_deps.sh && /tmp/install_tx_deps.sh    
+
 printenv > /dev/console
 
 if [ -f "${DATOMIC_HOME}/bin/aws" ]
@@ -26,12 +29,14 @@ chown -R datomic ${DATOMIC_DEPLOY_DIR}
 cd ${DATOMIC_DEPLOY_DIR}
 . /etc/init.d/functions
 
-echo "Running transactor with params:"
+ echo "Running transactor with params:"
 echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties"
 aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/aws.properties.wb-names
 
+echo "export DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH" >> ~datomic/.bash_profile
+chown datomic ~datomic/.bash_profile
+
 daemon \
-    --env="DATOMIC_EXT_CLASPSATH=$DATOMIC_EXT_CLASPSATH" \
     --user=datomic ${DATOMIC_DEPLOY_DIR}/bin/transactor \
     -Xms$XMX \
     -Xmx$XMX \

@@ -196,6 +196,17 @@
 		    ]
 		  ]
 		},
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export DATOMIC_TRANACTOR_DEPS_SCRIPT",
+		      {
+                        "Ref": "DatomicTransactorDepsScript"
+                      }
+		    ]
+                  ]
+		},
                 "cd /datomic",
                 "cat <<EOF >aws.properties",
                 "host=`curl http://169.254.169.254/latest/meta-data/local-ipv4`",
@@ -492,6 +503,10 @@
       "Type": "String",
       "NoEcho": "true",
       "Description": "Wormbase's datomic-pro license key"
+    },
+    "DatomicTransactorDepsScript": {
+      "Type": "String",
+      "Description": "URL to script to install deps for the datomic transactor"
     },
     "DatomicExtClasspathScript": {
       "Default": "",
