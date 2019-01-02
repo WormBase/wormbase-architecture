@@ -200,7 +200,7 @@
                   "Fn::Join": [
                     "=",
                     [
-                      "export DATOMIC_TRANACTOR_DEPS_SCRIPT",
+                      "export DATOMIC_TRANSACTOR_DEPS_SCRIPT",
 		      {
                         "Ref": "DatomicTransactorDepsScript"
                       }
