@@ -49,7 +49,7 @@ daemon \
     -Xms$XMX \
     -Xmx$XMX \
     $JAVA_OPTS \
-    "${DATOMIC_HOME}/aws.properties" >/ ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
+    "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
 sleep 20
 
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
