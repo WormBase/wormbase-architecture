@@ -506,7 +506,8 @@
     },
     "DatomicTransactorDepsScript": {
       "Type": "String",
-      "Description": "URL to script to install deps for the datomic transactor"
+      "Description": "URL to script to install deps for the datomic transactor",
+      "Default": ""
     },
     "DatomicExtClasspathScript": {
       "Default": "",
