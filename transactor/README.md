@@ -93,7 +93,7 @@ current user.
 ```bash
 DDB_TABLE="WS265"
 CF_STACK_NAME="WBTransactorWS265"
-DATOMIC_VERSION="0.9.5697"
+DATOMIC_VERSION="0.9.5703"
 DESIRED_CAPACITY=1
 SETTINGS="config/web-prod-params.json"
 
@@ -110,7 +110,7 @@ bin/manage $SETTINGS $CF_STACK_NAME \
 ```bash
 DDB_TABLE="WSNames"
 CF_STACK_NAME="WBNamesTransactor"
-DATOMIC_VERSION="0.9.5697"
+DATOMIC_VERSION="0.9.5703"
 DESIRED_CAPACITY=2
 SETTINGS="config/web-prod-params.json"
 
