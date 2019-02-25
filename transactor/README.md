@@ -36,7 +36,7 @@ if not already installed, then issue the following command to create a
 virtualenv:
 
 ```bash
-virtualenv -p python2 wb-cf-transactors
+virtualenv -p python wb-cf-transactors
 ```
 
 Activate the virtualenv:
