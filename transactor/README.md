@@ -27,7 +27,6 @@ accommodate the following features:
   * Ability to update an existing stack (cfn-init,cfn-hup and
     cfn-signal commands from `CloudFormation:Init`)
 
-Please note the following: #5
 
 ## Installation
 
