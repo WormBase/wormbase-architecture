@@ -40,6 +40,10 @@ cd ${DATOMIC_DEPLOY_DIR}
 echo "Running transactor with params:"
 echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties"
 
+# temporary debugging.
+aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/aws.properties.$$
+
+
 echo "export DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH" >> ~datomic/.bash_profile
 chown datomic ~datomic/.bash_profile
 
