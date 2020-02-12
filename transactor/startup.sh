@@ -6,6 +6,8 @@ export DATOMIC_NAME=datomic-pro-${DATOMIC_VERSION}
 export DATOMIC_ZIP=${DATOMIC_NAME}.zip
 export DATOMIC_DEPLOY_DIR=${DATOMIC_HOME}/${DATOMIC_NAME}
 
+ID=$$
+
 DEPS_INSTALLER=/tmp/install_tx_deps.sh
 
 if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
@@ -41,7 +43,7 @@ echo "Running transactor with params:"
 echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties"
 
 # temporary debugging.
-aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/aws.properties.$$
+aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/aws.properties.$ID
 
 
 echo "export DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH" >> ~datomic/.bash_profile
@@ -52,7 +54,7 @@ daemon \
     -Xms$XMX \
     -Xmx$XMX \
     $JAVA_OPTS \
-    "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console.log 2>&1 &
+    "${DATOMIC_HOME}/aws.properties" > ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log 2>&1 &
 sleep 20
 
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
@@ -61,8 +63,8 @@ echo "pid is $PID"
 if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
     while kill -0 $PID > /dev/null; do sleep 1; done
     echo "copying to s3"
-    aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console.log s3://transactor-logs/
-    tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console.log > /dev/console
+    aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log s3://transactor-logs/
+    tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log > /dev/console
     sleep 20
     shutdown -h now
 fi
