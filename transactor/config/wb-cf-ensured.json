@@ -241,7 +241,7 @@
                   "Fn::Join": [
                     "=",
                     [
-                      "aws-s3-log-bucket",
+                      "aws-s3-log-bucket-id",
                       {
                         "Ref": "DatomicTxAwsS3LogBucket"
                       }
