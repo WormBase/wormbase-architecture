@@ -443,10 +443,9 @@
       "t2.small": {
         "Arch": "64h"
       },
-      },
       "t2.medium": {
         "Arch": "64h"
-       }
+      }
     },
     "AWSRegionArch2AMI": {
       "ap-northeast-1": {"64p":"ami-eb494d8c", "64h":"ami-81f7cde6"},
