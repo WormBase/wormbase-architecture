@@ -216,7 +216,7 @@
 		    "Fn::Join": [
  		      "=",
 		      [
-                        "aws-clouldwatch-dimension-value",
+                        "aws-cloudwatch-dimension-value",
                         {
                           "Ref": "DatomicTxAwsCloudwatchDimensionValue"
                         }
