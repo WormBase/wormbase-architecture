@@ -440,6 +440,12 @@
       "i2.2xlarge": {
         "Arch": "64h"
       },
+      "c4.large": {
+        "Arch": "64h"
+      },
+      "c4.xlarge": {
+        "Arch": "64h"
+      },
       "t2.small": {
         "Arch": "64h"
       },
