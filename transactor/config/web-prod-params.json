@@ -1,5 +1,5 @@
 {
-    "InstanceType": "c3.large",
+    "InstanceType": "c4.large",
     "Xmx": "2626m",
     "DatomicTxAwsS3LogBucket": "transactor-logs",
     "DatomicTxAwsCloudwatchDimensionValue": "wormbase-datomic-transactors",
