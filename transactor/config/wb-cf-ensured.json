@@ -118,8 +118,9 @@
             }
           ]
         },
-        "UserData": {
+	"UserData": {
           "Fn::Base64": {
+            "Ref": "Toggle",
             "Fn::Join": [
               "\n",
               [
@@ -471,6 +472,12 @@
     }
   },
   "Parameters": {
+    "Toggle": {
+        "Description": "Used to force a rolling update. Set to the inverse of current value (true/false)",
+        "Type": "String",
+        "AllowedValues": ["false","true"],
+        "Default": "true"
+    },
     "InstanceType": {
       "Description": "Type of EC2 instance to launch",
       "Type": "String"
