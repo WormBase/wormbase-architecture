@@ -120,11 +120,10 @@
         },
 	"UserData": {
           "Fn::Base64": {
-            "Ref": "Toggle",
             "Fn::Join": [
-              "\n",
-              [
-                {
+	      "\n",
+	      [{"Ref": "Toggle"},
+               {
                   "Fn::Join": [
                     " ",
                     [
