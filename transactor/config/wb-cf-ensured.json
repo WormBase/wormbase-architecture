@@ -451,6 +451,9 @@
       },
       "t2.medium": {
         "Arch": "64h"
+      },
+      "t3.medium": {
+         "Arch": "64h"
       }
     },
     "AWSRegionArch2AMI": {
