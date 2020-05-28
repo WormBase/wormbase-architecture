@@ -1,5 +1,5 @@
 {
-    "InstanceType": "t2.medium",
+    "InstanceType": "t3.medium",
     "Xmx": "3g",
     "DatomicTxAwsS3LogBucket": "transactor-logs",
     "DatomicTxAwsCloudwatchDimensionValue": "wormbase-names-datomic-transactors",
