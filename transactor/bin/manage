@@ -13,6 +13,8 @@ from botocore.exceptions import ClientError
 from botocore.exceptions import ProfileNotFound
 import boto3
 import click
+import requests
+import requests.exceptions
 
 
 DEFAULT_CF_STACK_NAME = 'WBTransactor'
@@ -28,6 +30,22 @@ manage_cmd_group = functools.partial(click.group, context_settings={
 
 logger = logging.getLogger('boto3')
 
+
+class URLParamType(click.ParamType):
+
+    name = 'url'
+
+    def convert(self, value, param, ctx):
+        try:
+            response = requests.get(value)
+        except requests.exceptions.MissingSchema as ms:
+            self.fail(f'Invalid URL: {value!r}', param, ctx)
+        else:
+            if response.status_code != 200:
+                self.fail(f'URL {value!r} does not resolve', param, ctx)
+        return value
+
+URL = URLParamType()
 
 def option(*args, **kw):
     """Factory function for click.option that makes help text more useful.
@@ -220,11 +238,11 @@ def _parameter(name, value=None):
 @click.argument('datomic_version')
 @option('--datomic-transactor-deps-script',
         default=None,
-        type=str,
+        type=URL,
         help=('Optional custom script to install dependencies for a trasactor.'))
 @option('--datomic-ext-classpath-script',
         default=None,
-        type=str,
+        type=URL,
         help=('Optional arguments to custom script to download dependencies '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
 @desired_capacity_option()
@@ -268,11 +286,11 @@ def create(ctx,
         help='If not specified, use existing version')
 @option('--datomic-transactor-deps-script',
         default=None,
-        type=str,
+        type=URL,
         help=('Optional custom script to install dependencies for a trasactor.'))
 @option('--datomic-ext-classpath-script',
         default=None,
-        type=str,
+        type=URL,
         help=('Optional arguments to custom script to download dependencies '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
 @desired_capacity_option()
