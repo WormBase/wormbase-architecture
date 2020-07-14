@@ -18,9 +18,9 @@ if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
     if [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ]; then
         wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
         chmod +x /tmp/build_datomic_ext_classpath.sh
-        echo "stat /tmp/build_datomic_ext_classpath.sh:"
+        echo "stat /tmp/build_datomic_ext_classpath.sh:" >> /tmp/debugging.log
         stat /tmp/build_datomic_ext_classpath.sh >> /tmp/debugging.log
-        echo "cat /tmp/build_datomic_ext_classpath.sh:"
+        echo "cat /tmp/build_datomic_ext_classpath.sh:" >> /tmp/debugging.log
         cat /tmp/build_datomic_ext_classpath.sh >> /tmp/debugging.log
         echo "Setting DATOMIC_EXT_CLASSPATH_SCRIPT" >> /tmp/debugging.log
         export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/tmp/debugging.log /tmp/build_datomic_ext_classpath.sh')"
@@ -72,11 +72,11 @@ echo "pid is $PID"
 # Temp debug log upload
 aws s3 cp /tmp/debugging.log s3://transactor-logs/
 
-if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
-    while kill -0 $PID > /dev/null; do sleep 1; done
-    echo "copying to s3"
-    aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log s3://transactor-logs/
-    tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log >> /tmp/debugging.log
-    sleep 20
-    shutdown -h now
-fi
+# if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
+#     while kill -0 $PID > /dev/null; do sleep 1; done
+#     echo "copying to s3"
+#     aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log s3://transactor-logs/
+#     tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log >> /tmp/debugging.log
+#     sleep 20
+#     shutdown -h now
+# fi
