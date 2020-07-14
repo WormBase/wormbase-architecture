@@ -11,17 +11,22 @@ ID=$$
 DEPS_INSTALLER=/tmp/install_tx_deps.sh
 
 if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
+    echo "Fetching datomic transactor deps script" > /dev/console
     wget -O $DEPS_INSTALLER $DATOMIC_TRANSACTOR_DEPS_SCRIPT
     chmod +x $DEPS_INSTALLER
     /bin/bash $DEPS_INSTALLER
     if [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ]; then
 	wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
 	chmod +x /tmp/build_datomic_ext_classpath.sh
-	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh')"
+	echo "Setting DATOMIC_EXT_CLASSPATH_SCRIPT" > /dev/console
+	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/console /tmp/build_datomic_ext_classpath.sh')"
     fi
+fi
+
+if [ -z $DATOMIC_EXT_CLASSPATH ]; then
+    echo "DATOMIC_EXT_CLASSPATH was not set or empty" > /dev/console
 else
-    echo "DATOMIC_TRANSACTOR_DEPS_SCRIPT was not set"
-    echo "Not setting DATOMIC_EXT_CLASSPATH"
+    echo "ENV: DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH"
 fi
 
 printenv > /dev/console
@@ -34,13 +39,13 @@ else
     AWS_ACCESS_KEY_ID="${DATOMIC_READ_DEPLOY_ACCESS_KEY_ID}" AWS_SECRET_ACCESS_KEY="${DATOMIC_READ_DEPLOY_AWS_SECRET_KEY}" aws s3 cp s3://"${DATOMIC_DEPLOY_BUCKET}/${DATOMIC_VERSION}/${DATOMIC_ZIP}" ${DATOMIC_ZIP}
 fi
 
-unzip ${DATOMIC_ZIP}
+unzip ${DATOMIC_ZIP} > /dev/null
 chown -R datomic ${DATOMIC_DEPLOY_DIR}
 cd ${DATOMIC_DEPLOY_DIR}
 . /etc/init.d/functions
 
-echo "Running transactor with params:"
-echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties"
+echo "Running transactor with params:" > /dev/console
+echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties" > /dev/console
 
 # temporary debugging.
 aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/aws.properties.$ID
