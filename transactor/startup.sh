@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 cd /datomic
 export DATOMIC_HOME=/datomic
@@ -16,10 +16,14 @@ if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
     chmod +x $DEPS_INSTALLER
     /bin/bash $DEPS_INSTALLER
     if [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ]; then
-	wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
-	chmod +x /tmp/build_datomic_ext_classpath.sh
-	echo "Setting DATOMIC_EXT_CLASSPATH_SCRIPT" >> /tmp/debugging.log
-	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/tmp/debugging.log /tmp/build_datomic_ext_classpath.sh')"
+        wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
+        chmod +x /tmp/build_datomic_ext_classpath.sh
+        echo "stat /tmp/build_datomic_ext_classpath.sh:"
+        stat /tmp/build_datomic_ext_classpath.sh >> /tmp/debugging.log
+        echo "cat /tmp/build_datomic_ext_classpath.sh:"
+        cat /tmp/build_datomic_ext_classpath.sh >> /tmp/debugging.log
+        echo "Setting DATOMIC_EXT_CLASSPATH_SCRIPT" >> /tmp/debugging.log
+        export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/tmp/debugging.log /tmp/build_datomic_ext_classpath.sh')"
     fi
 fi
 
