@@ -26,7 +26,7 @@ fi
 if [ -z $DATOMIC_EXT_CLASSPATH ]; then
     echo "DATOMIC_EXT_CLASSPATH was not set or empty" > /dev/console
 else
-    echo "ENV: DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH"
+    echo "ENV: DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH" > /dev/console
 fi
 
 printenv > /dev/console
