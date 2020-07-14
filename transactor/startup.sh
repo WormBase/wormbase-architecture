@@ -19,7 +19,7 @@ if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
 	wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
 	chmod +x /tmp/build_datomic_ext_classpath.sh
 	echo "Setting DATOMIC_EXT_CLASSPATH_SCRIPT" >> /tmp/debugging.log
-	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/console /tmp/build_datomic_ext_classpath.sh')"
+	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/tmp/debugging.log /tmp/build_datomic_ext_classpath.sh')"
     fi
 fi
 
