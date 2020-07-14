@@ -11,25 +11,25 @@ ID=$$
 DEPS_INSTALLER=/tmp/install_tx_deps.sh
 
 if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
-    echo "Fetching datomic transactor deps script" >> /dev/console
+    echo "Fetching datomic transactor deps script" >> /tmp/debugging.log
     wget -O $DEPS_INSTALLER $DATOMIC_TRANSACTOR_DEPS_SCRIPT
     chmod +x $DEPS_INSTALLER
     /bin/bash $DEPS_INSTALLER
     if [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ]; then
 	wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
 	chmod +x /tmp/build_datomic_ext_classpath.sh
-	echo "Setting DATOMIC_EXT_CLASSPATH_SCRIPT" >> /dev/console
+	echo "Setting DATOMIC_EXT_CLASSPATH_SCRIPT" >> /tmp/debugging.log
 	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/console /tmp/build_datomic_ext_classpath.sh')"
     fi
 fi
 
 if [ -z $DATOMIC_EXT_CLASSPATH ]; then
-    echo "DATOMIC_EXT_CLASSPATH was not set or empty" >> /dev/console
+    echo "DATOMIC_EXT_CLASSPATH was not set or empty" >> /tmp/debugging.log
 else
-    echo "ENV: DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH" >> /dev/console
+    echo "ENV: DATOMIC_EXT_CLASSPATH=$DATOMIC_EXT_CLASSPATH" >> /tmp/debugging.log
 fi
 
-printenv >> /dev/console
+printenv >> /tmp/debugging.log
 
 if [ -f "${DATOMIC_HOME}/bin/aws" ]
 then
@@ -44,8 +44,8 @@ chown -R datomic ${DATOMIC_DEPLOY_DIR}
 cd ${DATOMIC_DEPLOY_DIR}
 . /etc/init.d/functions
 
-echo "Running transactor with params:" >> /dev/console
-echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties" >> /dev/console
+echo "Running transactor with params:" >> /tmp/debugging.log
+echo "${DATOMIC_DEPLOY_DIR}/bin/transactor -Xms$XMX -Xmx$XMX $JAVA_OPTS ${DATOMIC_HOME}/aws.properties" >> /tmp/debugging.log
 
 # temporary debugging.
 aws s3 cp ${DATOMIC_HOME}/aws.properties s3://transactor-logs/aws.properties.$ID
@@ -65,11 +65,14 @@ sleep 20
 export PID=`ps ax | grep transactor | grep java | grep -v grep | cut -c1-6`
 echo "pid is $PID"
 
+# Temp debug log upload
+aws s3 cp /tmp/debugging.log s3://transactor-logs/
+
 if [ "$DATOMIC_DISABLE_SHUTDOWN" == "" ]; then
     while kill -0 $PID > /dev/null; do sleep 1; done
     echo "copying to s3"
     aws s3 cp ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log s3://transactor-logs/
-    tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log >> /dev/console
+    tail -n 500 ${DATOMIC_DEPLOY_DIR}/datomic-console_$ID.log >> /tmp/debugging.log
     sleep 20
     shutdown -h now
 fi
