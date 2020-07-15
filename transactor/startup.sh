@@ -29,10 +29,6 @@ if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
     if [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ]; then
         wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
         chmod +x /tmp/build_datomic_ext_classpath.sh
-	file_log "stat /tmp/build_datomic_ext_classpath.sh:"
-	file_log $(stat /tmp/build_datomic_ext_classpath.sh)
-        file_log $(cat /tmp/build_datomic_ext_classpath.sh)
-        file_log "Setting DATOMIC_EXT_CLASSPATH_SCRIPT"
 	file_log "output of runing DATOMIC_EXT_CLASSPATH_SCRIPT:"
 	file_log $(su - datomic -c 'CONSOLE_DEVICE=/tmp/debugging.log /tmp/build_datomic_ext_classpath.sh')
         export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/tmp/debugging.log /tmp/build_datomic_ext_classpath.sh')"
