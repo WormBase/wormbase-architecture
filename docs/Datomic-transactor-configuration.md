@@ -1,1 +1,1 @@
-Documentation has now moved [here](https://github.com/WormBase/wormbase-architecture/tree/develop/transactor)
+Documentation has now moved [here](../transactor/README.md)
