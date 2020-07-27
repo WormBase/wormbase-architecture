@@ -1,0 +1,1 @@
+Documentation has now moved [here](https://github.com/WormBase/wormbase-architecture/tree/develop/transactor)

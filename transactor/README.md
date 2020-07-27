@@ -236,5 +236,5 @@ aws ec2 create-security-group \
 
 [1]: https://docs.datomic.com/on-prem/aws.html
 [installing pip]: https://packaging.python.org/installing/#requirements-for-installing-packages
-[AWS Credentials]: /WormBase/wormbase-architecture/wiki/AWS-Credentials
+[AWS Credentials]: ../docs/AWS-Credentials.md
 [AWS CF Console]: https://console.aws.amazon.com/cloudformation

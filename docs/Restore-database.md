@@ -1,0 +1,1 @@
+Documentation has now moved [here](../transactor/README.md)
