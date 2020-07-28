@@ -38,7 +38,7 @@ class URLParamType(click.ParamType):
     def convert(self, value, param, ctx):
         try:
             response = requests.get(value)
-        except requests.exceptions.MissingSchema as ms:
+        except requests.exceptions.MissingSchema:
             self.fail(f'Invalid URL: {value!r}', param, ctx)
         else:
             if response.status_code != 200:
@@ -133,9 +133,8 @@ class CommandContext:
         self._aws_username = aws_username or profile
         self.profile = profile
         if not profile:
-            click.echo('AWS_PROFILE/AWS_DEFAULT_PROFILE '
-                       'environment variabable '
-                       'has not been set',
+            click.echo('AWS profile is undefined.'
+                       ' Define AWS_PROFILE/AWS_DEFAULT_PROFILE env variabable or use the --profile (base script) argument.',
                        color='red')
             raise click.Abort()
         self.cf_stack_name = None
