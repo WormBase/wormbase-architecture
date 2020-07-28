@@ -130,7 +130,7 @@ class CommandContext:
     def __init__(self, profile,
                  aws_username=None,
                  verbose=True):
-        self._aws_username = aws_username or profile
+        self._aws_username = aws_username
         self.profile = profile
         if not profile:
             click.echo('AWS profile is undefined.'
@@ -150,11 +150,21 @@ class CommandContext:
     @property
     def aws_username(self):
         if self._aws_username is None:
-            return self.profile
+            #Define IAM user name based on current session
+            try:
+                #pylint: disable-msg=E1101
+                self._aws_username = self.client('iam').get_user()['User']['UserName']
+            except ClientError:
+                logger.error('Failed to retrieve IAM user-name. Specify user-name using the --aws-username argument.')
+                click.get_current_context().abort()
+            
         return self._aws_username
 
     def client(self, name):
-        return self.session.client('cloudformation')
+        """
+        Return a boto3, user-authenticated client to a named AWS service
+        """
+        return self.session.client(name)
 
     def resource(self, name):
         return self.session.resource(name)
