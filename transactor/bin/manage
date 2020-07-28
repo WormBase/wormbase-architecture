@@ -127,10 +127,9 @@ class CommandContext:
 
     wb_dp_license_key_path = '/tmp/wp-dp-license.key'
 
-    def __init__(self, profile, cf_stack_name,
+    def __init__(self, profile,
                  aws_username=None,
-                 verbose=True,
-                 settings_path=None):
+                 verbose=True):
         self._aws_username = aws_username or profile
         self.profile = profile
         if not profile:
@@ -139,10 +138,10 @@ class CommandContext:
                        'has not been set',
                        color='red')
             raise click.Abort()
-        self.cf_stack_name = cf_stack_name
+        self.cf_stack_name = None
         self.session = make_session(self.profile)
         self.verbose = verbose
-        self.params = self.read_settings(settings_path)
+        self.params = None
 
     @classmethod
     def read_settings(cls, settings_path):
@@ -185,8 +184,6 @@ pass_command_context = click.make_pass_decorator(CommandContext)
 
 
 @manage_cmd_group()
-@click.argument('settings_path')
-@click.argument('cf_stack_name')
 @option('--profile',
         default=os.environ.get(
             'AWS_PROFILE', os.environ.get('AWS_DEFAULT_PROFILE', '')),
@@ -198,21 +195,16 @@ pass_command_context = click.make_pass_decorator(CommandContext)
 @log_level_option(default='INFO')
 @click.pass_context
 def manage(ctx,
-           settings_path,
-           cf_stack_name,
            profile,
            aws_username,
            log_level,
            verbose):
     boto3.set_stream_logger(level=getattr(logging, log_level))
     ctx.obj = CommandContext(profile,
-                             cf_stack_name,
                              aws_username=aws_username,
-                             verbose=verbose,
-                             settings_path=settings_path)
+                             verbose=verbose)
     ctx.profile_name = profile
     ctx.session = make_session(ctx.profile_name)
-    ctx.cf_stack_name = cf_stack_name
 
 def _make_tags(ctx):
     return [dict(Key='CreatedBy', Value=ctx.aws_username),
@@ -233,7 +225,10 @@ def _parameter(name, value=None):
     return param
 
 
+#Create subcommand
 @manage.command()
+@click.argument('settings_path')
+@click.argument('cf_stack_name')
 @click.argument('ddb_table_name')
 @click.argument('datomic_version')
 @option('--datomic-transactor-deps-script',
@@ -250,6 +245,8 @@ def _parameter(name, value=None):
 @pass_command_context
 @command_result_reporter
 def create(ctx,
+           settings_path,
+           cf_stack_name,
            ddb_table_name,
            datomic_version,
            datomic_transactor_deps_script,
@@ -258,6 +255,11 @@ def create(ctx,
            cf_template_path):
     """Create a new CloudFormation stack for Datomic tranactor(s).
     """
+    #Define arguments
+    ctx.settings_path = settings_path
+    ctx.params = ctx.read_settings(settings_path)
+    ctx.cf_stack_name = cf_stack_name
+
     wb_dp_license_key_text = ctx.fetch_datomic_pro_license_key_text()
     params = [
         _parameter('DDBTableName', ddb_table_name),
@@ -278,7 +280,10 @@ def create(ctx,
     return ctx.cf_resource.create_stack(**kw)
 
 
+#Update subcommand
 @manage.command()
+@click.argument('settings_path')
+@click.argument('cf_stack_name')
 @click.argument('ddb_table_name')
 @option('--datomic-version',
         default=None,
@@ -298,6 +303,8 @@ def create(ctx,
 @pass_command_context
 @command_result_reporter
 def update(ctx,
+           settings_path,
+           cf_stack_name,
            ddb_table_name,
            datomic_version,
            datomic_transactor_deps_script,
@@ -306,6 +313,11 @@ def update(ctx,
            cf_template_path):
     """Update the CloudFormation configuration of the Datomic transactor(s).
     """
+    #Define arguments
+    ctx.settings_path = settings_path
+    ctx.params = ctx.read_settings(settings_path)
+    ctx.cf_stack_name = cf_stack_name
+
     params = [
         _parameter('DDBTableName', ddb_table_name),
         _parameter('DatomicLicenseKey'),
@@ -328,24 +340,29 @@ def update(ctx,
     return ctx.cf_client.update_stack(**kw)
 
 
+#Delete subcommand
 @manage.command()
+@click.argument('cf_stack_name')
 @pass_command_context
 @command_result_reporter
-def delete(ctx):
+def delete(ctx, cf_stack_name):
     """Delete the existing CloudFormation stack for the Datomic transactor(s).
     """
-    return ctx.cf_client.delete_stack(StackName=ctx.cf_stack_name)
+    return ctx.cf_client.delete_stack(StackName=cf_stack_name)
 
 
+#Status subcommand
 @manage.command()
+@click.argument('cf_stack_name')
 @pass_command_context
-def status(ctx):
+def status(ctx, cf_stack_name):
     """Report the status of the current transactor stack."""
-    stacks = ctx.cf_resource.stacks.filter(StackName=ctx.cf_stack_name)
+
+    stacks = ctx.cf_resource.stacks.filter(StackName=cf_stack_name)
     try:
         transactors_stack = next(iter(stacks), None)
     except ClientError:
-        print('No transactor stack with name', repr(ctx.cf_stack_name))
+        print('No transactor stack with name', repr(cf_stack_name))
     else:
         print(transactors_stack.stack_status)
         print('Event log:')
@@ -354,6 +371,7 @@ def status(ctx):
             print(ts.isoformat(' '), se.resource_status)
 
 
+#validate-template subcommand
 @manage.command('validate-template')
 @template_path_option()
 @pass_command_context
