@@ -231,6 +231,9 @@ def _make_tags(ctx):
 
 
 def _parameter(name, value=None):
+    """
+    Returns a map representing a CF parameter
+    """
     param = {'ParameterKey': name}
     if value:
         param['ParameterValue'] = value
@@ -306,7 +309,7 @@ def create(ctx,
 @option('--datomic-transactor-deps-script',
         default=None,
         type=URL,
-        help=('Optional custom script to install dependencies for a trasactor.'))
+        help=('Optional custom script to install dependencies for a transactor.'))
 @option('--datomic-ext-classpath-script',
         default=None,
         type=URL,
