@@ -280,6 +280,11 @@ def _propose_cf_changeset_cleanup(ctx, change_set_name, stack_name):
         type=URL,
         help=('Optional arguments to custom script to download dependencies '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
+@option('--datomic-transactor-startup-script',
+        default=None,
+        required=True,
+        type=URL,
+        help=('URL to custom datomic transactor startup script.'))
 @desired_capacity_option()
 @template_path_option()
 @pass_command_context
@@ -291,6 +296,7 @@ def create(ctx,
            datomic_version,
            datomic_transactor_deps_script,
            datomic_ext_classpath_script,
+           datomic_transactor_startup_script,
            desired_capacity,
            cf_template_path):
     """Create a new CloudFormation stack for Datomic tranactor(s).
@@ -306,6 +312,7 @@ def create(ctx,
         _parameter('DatomicLicenseKey', wb_dp_license_key_text),
         _parameter('DatomicVersion', datomic_version),
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
+        _parameter('DatomicTransactorStartupScript', datomic_transactor_startup_script)
     ]
     if datomic_ext_classpath_script:
         params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
