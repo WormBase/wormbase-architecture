@@ -324,11 +324,11 @@ def create(ctx,
 @option('--datomic-transactor-deps-script',
         default=None,
         type=URL,
-        help=('Optional custom script to install dependencies for a transactor.'))
+        help=('Optional URL to custom script to install deps for the datomic transactor.'))
 @option('--datomic-ext-classpath-script',
         default=None,
         type=URL,
-        help=('Optional arguments to custom script to download dependencies '
+        help=('Optional URL to custom script to download dependencies '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
 @option('--datomic-transactor-startup-script',
         default=None,
@@ -444,7 +444,7 @@ def update(ctx,
             StackName=ctx.cf_stack_name
         )
 
-        return_msg = "Successfully updated stack '"+ctx.cf_stack_name+"'."
+        return_msg = "Successfully initiated stack update for '"+ctx.cf_stack_name+"'."
 
     return return_msg
 

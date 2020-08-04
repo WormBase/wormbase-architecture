@@ -539,7 +539,7 @@
     },
     "DatomicExtClasspathScript": {
       "Default": "",
-      "Description": "URL to script for building the DATOMIC_EXT_CLASSPATH.",
+      "Description": "URL to script to download dependencies and build the classpath string for DATOMIC_EXT_CLASSPATH.",
       "Type": "String"
     },
     "DatomicTransactorStartupScript": {
