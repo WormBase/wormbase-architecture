@@ -12,7 +12,7 @@
         "AutoScalingRollingUpdate": {
           "MinInstancesInService": "1",
           "MaxBatchSize": "1",
-          "PauseTime": "PT12M5S"
+          "PauseTime": "PT7M"
         }
       },
       "Properties": {
