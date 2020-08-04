@@ -543,7 +543,6 @@
       "Type": "String"
     },
     "DatomicTransactorStartupScript": {
-      "Default": "https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh",
       "Description": "URL to script for starting the datomic transactor process.",
       "Type": "String"
     },

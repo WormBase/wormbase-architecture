@@ -81,7 +81,7 @@ log_level_option = functools.partial(
 
 def validate_desired_capacity(ctx, param, value):
     """Validates the auto-scaling desired capacity value."""
-    if re.match(r'[12]', value) is None:
+    if value is not None and re.match(r'[12]', value) is None:
         raise ValueError('DesiredCapacity Must be 1 or 2')
     return value
 
@@ -261,8 +261,16 @@ def _propose_cf_changeset_cleanup(ctx, change_set_name, stack_name):
 @manage.command()
 @click.argument('settings_path')
 @click.argument('cf_stack_name')
-@click.argument('ddb_table_name')
-@click.argument('datomic_version')
+@option('--ddb-table-name',
+        default=None,
+        required=True,
+        type=str,
+        help='DynamoDB table name for datomic storage.')
+@option('--datomic-version',
+        default=None,
+        required=True,
+        type=str,
+        help='Datomic version to deploy.')
 @option('--datomic-transactor-deps-script',
         default=None,
         type=URL,
@@ -316,30 +324,37 @@ def create(ctx,
 @manage.command()
 @click.argument('settings_path')
 @click.argument('cf_stack_name')
-@click.argument('ddb_table_name')
+@option('--ddb-table-name',
+        default=None,
+        type=str,
+        help='DynamoDB table name for datomic storage. If undefined, keep current CF param value.')
 @option('--datomic-version',
         default=None,
         type=str,
-        help='If not specified, use existing version')
+        help='Datomic version to deploy. If undefined, keep current CF param value.')
 @option('--datomic-transactor-deps-script',
         default=None,
         type=URL,
-        help=('Optional URL to custom script to install deps for the datomic transactor.'))
+        help=('Optional URL to custom script to install deps for the datomic transactor. '
+              'If undefined, keep current CF param value.'))
 @option('--datomic-ext-classpath-script',
         default=None,
         type=URL,
-        help=('Optional URL to custom script to download dependencies '
-              'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
+        help=('Optional URL to custom script to download library deps '
+              'and build the classpath string for DATOMIC_EXT_CLASSPATH. '
+              'If undefined, keep current CF param value.'))
 @option('--datomic-transactor-startup-script',
         default=None,
         type=URL,
-        help=('Optional URL to custom datomic transactor startup script. If undefined, defaults to CF template default.'))
+        help=('Optional URL to custom datomic transactor startup script. '
+              'If undefined, keep current CF param value.'))
 @option('--descr',
         default=None,
         type=str,
         required=True,
         help=('Small string describing why updates are to be made.'))
-@desired_capacity_option()
+@desired_capacity_option(default=None, help='The number of EC2 instances desired to be in service. '+
+                                            'If undefined, keep current CF param value.')
 @template_path_option(default=None)
 @pass_command_context
 @command_result_reporter
@@ -369,13 +384,10 @@ def update(ctx,
         _parameter('DatomicLicenseKey'),
         _parameter('DatomicVersion', datomic_version),
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
+        _parameter('DatomicTransactorDepsScript', datomic_transactor_deps_script),
+        _parameter('DatomicExtClasspathScript', datomic_ext_classpath_script),
+        _parameter('DatomicTransactorStartupScript', datomic_transactor_startup_script)
     ]
-    if datomic_transactor_deps_script:
-        params += [_parameter('DatomicTransactorDepsScript', datomic_transactor_deps_script)]
-    if datomic_ext_classpath_script:
-        params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
-    if datomic_transactor_startup_script:
-        params += [_parameter('DatomicTransactorStartupScript', datomic_transactor_startup_script)]
     params.extend(_parameter(k, v)
                   for (k, v) in  ctx.params.items())
     kw = dict(StackName=ctx.cf_stack_name,
