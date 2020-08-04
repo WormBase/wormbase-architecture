@@ -76,8 +76,7 @@ Running the `manage` script with the `--help` argument, directly after the scrip
  or after a sub-command, will describe the available options and any required arguments
  of the script or sub-command.
 
-This script expects two positional arguments (*STACK_PARAM_FILE* and *CF_STACK_NAME*),
-followed by a sub-command, followed by more positional and optional arguments.
+This script expects a sub-command, followed by more positional and optional arguments.
 
 Transactors may be managed for more than one project.
 (Currently web production and the "names" projects).
