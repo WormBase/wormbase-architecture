@@ -241,6 +241,21 @@ def _parameter(name, value=None):
         param['UsePreviousValue'] = True
     return param
 
+def _propose_cf_changeset_cleanup(ctx, change_set_name, stack_name):
+    """
+    Propose CloudFormation change-set cleanup (removal)
+    through standard OUT/IN
+    """
+
+    cleanup = input('Cleanup change set? [Y/n]: ')
+    cleanup = cleanup.lower()
+
+    if cleanup in ('y', 'yes', ''):
+        ctx.cf_client.delete_change_set(
+            ChangeSetName=change_set_name,
+            StackName=stack_name
+        )
+
 
 #Create subcommand
 @manage.command()
@@ -391,6 +406,9 @@ def update(ctx,
 
         if change_set['Status'] == "FAILED":
             print("Creating stack change set failed: "+change_set['StatusReason'], file=sys.stderr)
+
+            _propose_cf_changeset_cleanup(ctx, kw['ChangeSetName'], ctx.cf_stack_name)
+
             sys.exit(1)
         else:
             print("Unexpected error waiting for Change Set to return.", file=sys.stderr)
@@ -414,15 +432,9 @@ def update(ctx,
 
     return_msg = None
     if apply_change in ('n', 'no'):
-        #Request change set cleanup
-        cleanup = input('Cleanup change set? [Y/n]: ')
-        cleanup = cleanup.lower()
+        #Propose change set cleanup
+        _propose_cf_changeset_cleanup(ctx, kw['ChangeSetName'], ctx.cf_stack_name)
 
-        if cleanup in ('y', 'yes', ''):
-            ctx.cf_client.delete_change_set(
-                ChangeSetName=kw['ChangeSetName'],
-                StackName=ctx.cf_stack_name
-            )
         return_msg = "Stack update aborted (user input)."
 
     else:
