@@ -408,6 +408,7 @@ def update(ctx,
     kw['ChangeSetName'] = "cli-manage-" + datetime.now().strftime("%Y%m%d-%H%M%S")
     kw['Description'] = descr
 
+    print("Creating stack change set...")
     ctx.cf_client.create_change_set(**kw)
 
     #Wait for change set to become available
@@ -458,6 +459,7 @@ def update(ctx,
 
     else:
         #Apply the change set
+        print("Executing stack change set...")
         ctx.cf_client.execute_change_set(
             ChangeSetName=kw['ChangeSetName'],
             StackName=ctx.cf_stack_name
