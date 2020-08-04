@@ -9,12 +9,17 @@ import logging
 import os
 import re
 
-from botocore.exceptions import ClientError
+from datetime import datetime
+import sys
+
+from botocore.exceptions import ClientError, WaiterError
 from botocore.exceptions import ProfileNotFound
 import boto3
 import click
 import requests
 import requests.exceptions
+
+import pprint
 
 
 DEFAULT_CF_STACK_NAME = 'WBTransactor'
@@ -307,6 +312,11 @@ def create(ctx,
         type=URL,
         help=('Optional arguments to custom script to download dependencies '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
+@option('--descr',
+        default=None,
+        type=str,
+        required=True,
+        help=('Small string describing why updates are to be made.'))
 @desired_capacity_option()
 @template_path_option(default=None)
 @pass_command_context
@@ -318,9 +328,13 @@ def update(ctx,
            datomic_version,
            datomic_transactor_deps_script,
            datomic_ext_classpath_script,
+           descr,
            desired_capacity,
            cf_template_path):
-    """Update the CloudFormation configuration of the Datomic transactor(s).
+    """
+    Update the CloudFormation configuration of the Datomic transactor(s).
+    Creates a change set and returns it for human verification,
+    before applying it to the live CF stack.
     """
     #Define arguments
     ctx.settings_path = settings_path
@@ -346,7 +360,71 @@ def update(ctx,
         kw['UsePreviousTemplate'] = True
     else:
         kw['TemplateBody'] = ctx.read_file(cf_template_path)
-    return ctx.cf_client.update_stack(**kw)
+
+    kw['ChangeSetName'] = "cli-manage-" + datetime.now().strftime("%Y%m%d-%H%M%S")
+    kw['Description'] = descr
+
+    ctx.cf_client.create_change_set(**kw)
+
+    #Wait for change set to become available
+    waiter = ctx.cf_client.get_waiter('change_set_create_complete')
+    try :
+        waiter.wait(
+            ChangeSetName=kw['ChangeSetName'],
+            StackName=ctx.cf_stack_name
+        )
+    except WaiterError:
+        change_set = ctx.cf_client.describe_change_set(
+            ChangeSetName=kw['ChangeSetName'],
+            StackName=ctx.cf_stack_name
+        )
+
+        if change_set['Status'] == "FAILED":
+            print("Creating stack change set failed: "+change_set['StatusReason'], file=sys.stderr)
+            sys.exit(1)
+        else:
+            print("Unexpected error waiting for Change Set to return.", file=sys.stderr)
+            raise
+
+    change_set = ctx.cf_client.describe_change_set(
+        ChangeSetName=kw['ChangeSetName'],
+        StackName=ctx.cf_stack_name
+    )
+
+    print("\nThe following change set will be applied to CF stack '"+ctx.cf_stack_name+"':\n")
+    print("Input params:\n")
+    print(pprint.pprint(change_set['Parameters']))
+    print("Changes:\n")
+    print(pprint.pprint(change_set['Changes']))
+
+    apply_change = None
+    while apply_change not in ('n', 'no', 'y', 'yes', ''):
+        apply_change = input('Execute change set? [Y/n]: ')
+        apply_change = apply_change.lower()
+
+    return_msg = None
+    if apply_change in ('n', 'no'):
+        #Request change set cleanup
+        cleanup = input('Cleanup change set? [Y/n]: ')
+        cleanup = cleanup.lower()
+
+        if cleanup in ('y', 'yes', ''):
+            ctx.cf_client.delete_change_set(
+                ChangeSetName=kw['ChangeSetName'],
+                StackName=ctx.cf_stack_name
+            )
+        return_msg = "Stack update aborted (user input)."
+
+    else:
+        #Apply the change set
+        ctx.cf_client.execute_change_set(
+            ChangeSetName=kw['ChangeSetName'],
+            StackName=ctx.cf_stack_name
+        )
+
+        return_msg = "Successfully updated stack '"+ctx.cf_stack_name+"'."
+
+    return return_msg
 
 
 #Delete subcommand

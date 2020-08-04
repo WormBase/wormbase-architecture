@@ -143,24 +143,51 @@ The `manage` script ensures that the CloudFormation stack gets the appropriate t
 
 ## Update deployment
 There's two common strategies to update a CloudFormation stack:
- * Update the stack by creating and applying a change set
-     This is the preferred option for rolling updates and small changes that don't require CF template updates
+ * Update the stack by creating and applying a change set.  
+     This is the preferred option for most updates, as it allows a review of the changes made
+     before applying them to the live stack.
+    * Rolling updates (without config changes) can be done through the console
+    * Any update involving template or parameter changes should be done through the `update` subcommand
+      of the [CF manage](#CF-Manage-script) script.
+      This allows for traceable template and parameter changes through code versioning in this repo.
  * Delete and recreate the stack
-     This is usefull for bigger, more structural changes and CF template updates
+     This can be usefull when trying to fix unexplained issues with the current stack,
+     or when doing bigger, more structural changes and CF template updates. However,
+     this is not the preferred method, as it is less traceable.
 
-### Rolling updates (change set)
+### Rolling updates (console)
 Rolling updates are done using change sets through the CF Console:
  1. Go to the [CloudFormation Console][AWS CF Console] and click the stack name matching the stack to update.
  2. Click Stack actions and then choose **Create change set for current stack**.
  3. On the next page, select **Use current template** and continue with **next**.
- 4. Update the required Stack Parameters, or flip **Toggle** to force a rolling update without parameter changes.
+ 4. Flip **Toggle** to force a rolling update without parameter changes.
  5. On the next page, leave the configurations be and click **next** to proceed.
  6. Review the presented summary and click **Create change set**
- 7. Provide a description describing why the changes are being made and click **Create change set**
+ 7. Provide a description describing why the update is being made and click **Create change set**
  8. Wait for the Change set to get a status **CREATE_COMPLETE** (refresh the Overview pane in the console)
  9. Review the Changes presented at the bottom of the page and after approving, click **Execute** to apply them.
 
-### Config updates (delete and replace)
+### Template/parameter updates (cli update)
+For CF stack updates that require template or parameter changes,
+using `update` subcommand of the [CF manage](#CF-Manage-script) script is the preferred option,
+as it ensures proper tagging, URL validation and enables a semi-automatic, interactive update process,
+in which the effect of deploying the updates can be assessed before updating the live stack.
+
+
+For a full overview of all input arguments of the `bin/manage update` script:
+```bash
+python bin/manage --profile <profile-name> update --help
+```
+
+Updating a stack using this command is quite straightforward:
+ 1. Update any CF template files, parameter files, or transactor scripts as needed.
+ 2. Run the `bin/manage update` script with all required arguments.
+    Make sure to provide a description about why the updates are being made (using the `--descr` argument).
+ 3. Inspect the reported changes to be applied.
+ 4. Confirm whether or not to apply the reported changes to the stack (`y/n` input),
+    and whether to cleanup the change-set if not.
+
+### Delete and replace
 For larger CF config updates, using the [CF manage](#CF-Manage-script) script is the preferred option.
 Activate the python virtual environment as described [above](#Usage) and then do the following steps:
 
