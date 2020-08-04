@@ -296,7 +296,17 @@
                 },
                 "encrypt-channel=false",
                 "EOF",
-                "wget -O startup.sh https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh",
+                {
+                  "Fn::Join": [
+                    " ",
+                    [
+                      "wget -O startup.sh",
+                      {
+                        "Ref": "DatomicTransactorStartupScript"
+                      }
+                    ]
+                  ]
+                },
                 "chmod 744 aws.properties",
                 "chmod 500 startup.sh",
                 {
@@ -529,7 +539,12 @@
     },
     "DatomicExtClasspathScript": {
       "Default": "",
-      "Description": "The script for building the DATOMIC_EXT_CLASSPATH.",
+      "Description": "URL to script for building the DATOMIC_EXT_CLASSPATH.",
+      "Type": "String"
+    },
+    "DatomicTransactorStartupScript": {
+      "Default": "https://raw.githubusercontent.com/WormBase/wormbase-architecture/develop/transactor/startup.sh",
+      "Description": "URL to script for starting the datomic transactor process.",
       "Type": "String"
     },
     "DDBTableName": {

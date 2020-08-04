@@ -315,6 +315,10 @@ def create(ctx,
         type=URL,
         help=('Optional arguments to custom script to download dependencies '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
+@option('--datomic-transactor-startup-script',
+        default=None,
+        type=URL,
+        help=('Optional URL to custom datomic transactor startup script. If undefined, defaults to CF template default.'))
 @option('--descr',
         default=None,
         type=str,
@@ -331,6 +335,7 @@ def update(ctx,
            datomic_version,
            datomic_transactor_deps_script,
            datomic_ext_classpath_script,
+           datomic_transactor_startup_script,
            descr,
            desired_capacity,
            cf_template_path):
@@ -354,6 +359,8 @@ def update(ctx,
         params += [_parameter('DatomicTransactorDepsScript', datomic_transactor_deps_script)]
     if datomic_ext_classpath_script:
         params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
+    if datomic_transactor_startup_script:
+        params += [_parameter('DatomicTransactorStartupScript', datomic_transactor_startup_script)]
     params.extend(_parameter(k, v)
                   for (k, v) in  ctx.params.items())
     kw = dict(StackName=ctx.cf_stack_name,
