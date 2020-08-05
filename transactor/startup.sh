@@ -15,9 +15,9 @@ if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
     chmod +x $DEPS_INSTALLER
     /bin/bash $DEPS_INSTALLER
     if [ ! -z $DATOMIC_EXT_CLASSPATH_SCRIPT ]; then
-	wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
-	chmod +x /tmp/build_datomic_ext_classpath.sh
-	export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh')"
+        wget -O /tmp/build_datomic_ext_classpath.sh $DATOMIC_EXT_CLASSPATH_SCRIPT
+        chmod +x /tmp/build_datomic_ext_classpath.sh
+        export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh')"
     fi
 else
     echo "DATOMIC_TRANSACTOR_DEPS_SCRIPT was not set"
