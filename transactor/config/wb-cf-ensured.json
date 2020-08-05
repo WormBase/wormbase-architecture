@@ -226,8 +226,28 @@
                     ]
                   ]
                 },
-                "aws-cloudwatch-region=us-east-1",
-                "aws-dynamodb-region=us-east-1",
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "aws-cloudwatch-region",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "aws-dynamodb-region",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
+                  ]
+                },
                 {
                   "Fn::Join": [
                     "=",
