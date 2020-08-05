@@ -118,12 +118,15 @@
             }
           ]
         },
-	"UserData": {
+        "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
-	      "\n",
-	      [{"Ref": "Toggle"},
-               {
+              "\n",
+              [
+                {
+                  "Ref": "Toggle"
+                },
+                {
                   "Fn::Join": [
                     " ",
                     [
@@ -185,7 +188,7 @@
                     ]
                   ]
                 },
-		{
+                {
                   "Fn::Join": [
                     "=",
                     [
@@ -193,35 +196,35 @@
                       {
                         "Ref": "DatomicExtClasspathScript"
                       }
-		    ]
-		  ]
-		},
+                    ]
+                  ]
+                },
                 {
                   "Fn::Join": [
                     "=",
                     [
                       "export DATOMIC_TRANSACTOR_DEPS_SCRIPT",
-		      {
+                      {
                         "Ref": "DatomicTransactorDepsScript"
                       }
-		    ]
+                    ]
                   ]
-		},
+                },
                 "cd /datomic",
                 "cat <<EOF >aws.properties",
                 "host=`curl http://169.254.169.254/latest/meta-data/local-ipv4`",
                 "alt-host=`curl http://169.254.169.254/latest/meta-data/public-ipv4`",
                 "port=4334",
-		{
-		    "Fn::Join": [
- 		      "=",
-		      [
-                        "aws-cloudwatch-dimension-value",
-                        {
-                          "Ref": "DatomicTxAwsCloudwatchDimensionValue"
-                        }
-                      ]
-                   ]
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "aws-cloudwatch-dimension-value",
+                      {
+                        "Ref": "DatomicTxAwsCloudwatchDimensionValue"
+                      }
+                    ]
+                  ]
                 },
                 "aws-cloudwatch-region=us-east-1",
                 "aws-dynamodb-region=us-east-1",
@@ -250,38 +253,38 @@
                 },
                 "aws-transactor-role=datomic-aws-transactor",
                 "protocol=ddb",
-		{
-		    "Fn::Join": [
- 		      "=",
-		      [
-                        "memory-index-max",
-                        {
-                          "Ref": "DatomicTxMemoryIndexMax"
-                        }
-                      ]
-                   ]
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "memory-index-max",
+                      {
+                        "Ref": "DatomicTxMemoryIndexMax"
+                      }
+                    ]
+                  ]
                 },
-		{
-		    "Fn::Join": [
- 		      "=",
-		      [
-                        "memory-index-threshold",
-                        {
-                          "Ref": "DatomicTxMemoryIndexThreshold"
-                        }
-                      ]
-                   ]
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "memory-index-threshold",
+                      {
+                        "Ref": "DatomicTxMemoryIndexThreshold"
+                      }
+                    ]
+                  ]
                 },
-		{
-		    "Fn::Join": [
- 		      "=",
-		      [
-                        "object-cache-max",
-                        {
-                          "Ref": "DatomicTxObjectCacheMax"
-                        }
-                      ]
-                   ]
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "object-cache-max",
+                      {
+                        "Ref": "DatomicTxObjectCacheMax"
+                      }
+                    ]
+                  ]
                 },
                 {
                   "Fn::Join": [
@@ -463,32 +466,77 @@
         "Arch": "64h"
       },
       "t3.medium": {
-         "Arch": "64h"
+        "Arch": "64h"
       }
     },
     "AWSRegionArch2AMI": {
-      "ap-northeast-1": {"64p":"ami-eb494d8c", "64h":"ami-81f7cde6"},
-      "ap-northeast-2": {"64p":"ami-6eb66a00", "64h":"ami-f594489b"},
-      "ca-central-1": {"64p":"ami-204bf744", "64h":"ami-5e5be73a"},
-      "us-east-2": {"64p":"ami-5b42643e", "64h":"ami-896c4aec"},
-      "eu-west-2": {"64p":"ami-e52d3a81", "64h":"ami-55091e31"},
-      "us-west-1": {"64p":"ami-97cbebf7", "64h":"ami-442a0a24"},
-      "ap-southeast-1": {"64p":"ami-db1492b8", "64h":"ami-3e90165d"},
-      "us-west-2": {"64p":"ami-daa5c6ba", "64h":"ami-cb5030ab"},
-      "eu-central-1": {"64p":"ami-f3f02b9c", "64h":"ami-d564bcba"},
-      "us-east-1": {"64p":"ami-7f5f1e69", "64h":"ami-da5110cc"},
-      "eu-west-1": {"64p":"ami-66001700", "64h":"ami-77465211"},
-      "ap-southeast-2": {"64p":"ami-32cbdf51", "64h":"ami-66647005"},
-      "ap-south-1": {"64p":"ami-82126eed", "64h":"ami-723c401d"},
-      "sa-east-1": {"64p":"ami-afd7b9c3", "64h":"ami-ab9af4c7"}
+      "ap-northeast-1": {
+        "64p": "ami-eb494d8c",
+        "64h": "ami-81f7cde6"
+      },
+      "ap-northeast-2": {
+        "64p": "ami-6eb66a00",
+        "64h": "ami-f594489b"
+      },
+      "ca-central-1": {
+        "64p": "ami-204bf744",
+        "64h": "ami-5e5be73a"
+      },
+      "us-east-2": {
+        "64p": "ami-5b42643e",
+        "64h": "ami-896c4aec"
+      },
+      "eu-west-2": {
+        "64p": "ami-e52d3a81",
+        "64h": "ami-55091e31"
+      },
+      "us-west-1": {
+        "64p": "ami-97cbebf7",
+        "64h": "ami-442a0a24"
+      },
+      "ap-southeast-1": {
+        "64p": "ami-db1492b8",
+        "64h": "ami-3e90165d"
+      },
+      "us-west-2": {
+        "64p": "ami-daa5c6ba",
+        "64h": "ami-cb5030ab"
+      },
+      "eu-central-1": {
+        "64p": "ami-f3f02b9c",
+        "64h": "ami-d564bcba"
+      },
+      "us-east-1": {
+        "64p": "ami-7f5f1e69",
+        "64h": "ami-da5110cc"
+      },
+      "eu-west-1": {
+        "64p": "ami-66001700",
+        "64h": "ami-77465211"
+      },
+      "ap-southeast-2": {
+        "64p": "ami-32cbdf51",
+        "64h": "ami-66647005"
+      },
+      "ap-south-1": {
+        "64p": "ami-82126eed",
+        "64h": "ami-723c401d"
+      },
+      "sa-east-1": {
+        "64p": "ami-afd7b9c3",
+        "64h": "ami-ab9af4c7"
+      }
     }
   },
   "Parameters": {
     "Toggle": {
-        "Description": "Used to force a rolling update. Set to the inverse of current value (true/false)",
-        "Type": "String",
-        "AllowedValues": ["false","true"],
-        "Default": "true"
+      "Description": "Used to force a rolling update. Set to the inverse of current value (true/false)",
+      "Type": "String",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Default": "true"
     },
     "InstanceType": {
       "Description": "Type of EC2 instance to launch",
