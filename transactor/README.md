@@ -85,7 +85,7 @@ Each project should have its own settings file in the `./config` directory,
 detailing specific instance type and datomic memory requirements.
 
 #### `Create` subcommand example usage
-The create subcommand will use `config/wb-cf-ensured.json` as default CF template file
+The create subcommand will use `config/wb-datomic-tx-cf-template.yml` as default CF template file
 (configurable through the `--cf-template-path` option), apply the provided *STACK_PARAM_FILE*
 as CF parameters and deploy the complete stack as *CF_STACK_NAME* to cloudformation.
 

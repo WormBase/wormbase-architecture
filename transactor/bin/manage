@@ -26,7 +26,7 @@ DEFAULT_CF_STACK_NAME = 'WBTransactor'
 
 DEFAULT_CF_TEMPLATE_PATH = os.path.join(os.getcwd(),
                                         'config',
-                                        'wb-cf-ensured.json')
+                                        'wb-datomic-tx-cf-template.yml')
 
 manage_cmd_group = functools.partial(click.group, context_settings={
     'help_option_names': ['-h', '--help']
