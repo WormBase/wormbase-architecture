@@ -27,7 +27,7 @@ if [ ! -z $DATOMIC_TRANSACTOR_DEPS_SCRIPT ]; then
         chmod +x /tmp/build_datomic_ext_classpath.sh
         echo "BUILD_EXT_CLASSPATH log:" >> ${LOGFILE}
         echo "------------------------" >> ${LOGFILE}
-        export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/stderr /tmp/build_datomic_ext_classpath.sh 2>> "${LOGFILE}"')"
+        export DATOMIC_EXT_CLASSPATH="$(su - datomic -c 'CONSOLE_DEVICE=/dev/null /tmp/build_datomic_ext_classpath.sh 2>> '"$LOGFILE")"
         echo "---" >> ${LOGFILE}
     fi
 else
