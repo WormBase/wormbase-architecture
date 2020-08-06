@@ -66,13 +66,18 @@ Resources:
             --stack ${AWS::StackName} \
             --resource LaunchConfig \
             --region ${AWS::Region}
+          
           exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+
           export XMX=${Xmx}
           export JAVA_OPTS=${JavaOpts}
           export DATOMIC_DEPLOY_BUCKET=${DatomicDeployBucket}
           export DATOMIC_VERSION=${DatomicVersion}
           export DATOMIC_EXT_CLASSPATH_SCRIPT=${DatomicExtClasspathScript}
           export DATOMIC_TRANSACTOR_DEPS_SCRIPT=${DatomicTransactorDepsScript}
+          export CF_STACK_NAME=${AWS::StackName}
+          export EC2_INSTANCE_ID=$(wget -q -O - http://instance-data/latest/meta-data/instance-id)
+
           cd /datomic
           cat <<EOF >aws.properties
           host=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
@@ -92,6 +97,7 @@ Resources:
           license-key=${DatomicLicenseKey}
           encrypt-channel=false
           EOF
+
           wget -O startup.sh ${DatomicTransactorStartupScript}
           chmod 744 aws.properties
           chmod 500 startup.sh
