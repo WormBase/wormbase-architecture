@@ -74,6 +74,7 @@ Resources:
           export DATOMIC_DEPLOY_BUCKET=${DatomicDeployBucket}
           export DATOMIC_VERSION=${DatomicVersion}
           export DATOMIC_EXT_CLASSPATH_SCRIPT=${DatomicExtClasspathScript}
+          export ARTIFACT_VERSION=${DatomicExtClassLibVersion}
           export DATOMIC_TRANSACTOR_DEPS_SCRIPT=${DatomicTransactorDepsScript}
           export CF_STACK_NAME=${AWS::StackName}
           export EC2_INSTANCE_ID=$(wget -q -O - http://instance-data/latest/meta-data/instance-id)
@@ -285,6 +286,11 @@ Parameters:
     Description: >-
       URL to script to download dependencies and build the classpath string for
       DATOMIC_EXT_CLASSPATH.
+    Type: String
+  DatomicExtClassLibVersion:
+    Default: ''
+    Description: >-
+      Version number of library to download using DatomicExtClasspathScript.
     Type: String
   DatomicTransactorStartupScript:
     Description: URL to script for starting the datomic transactor process.

@@ -280,6 +280,14 @@ def _propose_cf_changeset_cleanup(ctx, change_set_name, stack_name):
         type=URL,
         help=('Optional arguments to custom script to download dependencies '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH, if provided.'))
+@option('--datomic-ext-class-lib-version',
+        default=None,
+        type=str,
+        help=('Optional Version number of library to download using datomic-ext-classpath-script. '
+              'If datomic-ext-classpath-script is defined and lib-version is left undefined, '
+              'datomic-ext-classpath-script will automatically download the latest release on every '
+              'new transactor startup (which may cause unexpected behaviour when scaling/replacing '
+              'instances).'))
 @option('--datomic-transactor-startup-script',
         default=None,
         required=True,
@@ -296,6 +304,7 @@ def create(ctx,
            datomic_version,
            datomic_transactor_deps_script,
            datomic_ext_classpath_script,
+           datomic_ext_class_lib_version,
            datomic_transactor_startup_script,
            desired_capacity,
            cf_template_path):
@@ -316,6 +325,7 @@ def create(ctx,
     ]
     if datomic_ext_classpath_script:
         params += [_parameter('DatomicExtClasspathScript', datomic_ext_classpath_script)]
+        params += [_parameter('DatomicExtClassLibVersion', datomic_ext_class_lib_version)]
     if datomic_transactor_deps_script:
         params += [_parameter('DatomicTransactorDepsScript', datomic_transactor_deps_script)]
     params.extend(_parameter(k, v)
@@ -350,6 +360,12 @@ def create(ctx,
         help=('Optional URL to custom script to download library deps '
               'and build the classpath string for DATOMIC_EXT_CLASSPATH. '
               'If undefined, keep current CF param value.'))
+@option('--datomic-ext-class-lib-version',
+        default=None,
+        type=str,
+        help=('Optional Version number of library to download '
+              'using datomic-ext-classpath-script. '
+              'If undefined, keep current CF param value.'))
 @option('--datomic-transactor-startup-script',
         default=None,
         type=URL,
@@ -372,6 +388,7 @@ def update(ctx,
            datomic_version,
            datomic_transactor_deps_script,
            datomic_ext_classpath_script,
+           datomic_ext_class_lib_version,
            datomic_transactor_startup_script,
            descr,
            desired_capacity,
@@ -393,6 +410,7 @@ def update(ctx,
         _parameter('AutoScalingDesiredCapacity', desired_capacity),
         _parameter('DatomicTransactorDepsScript', datomic_transactor_deps_script),
         _parameter('DatomicExtClasspathScript', datomic_ext_classpath_script),
+        _parameter('DatomicExtClassLibVersion', datomic_ext_class_lib_version),
         _parameter('DatomicTransactorStartupScript', datomic_transactor_startup_script)
     ]
     params.extend(_parameter(k, v)
