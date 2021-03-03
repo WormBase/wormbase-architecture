@@ -77,9 +77,11 @@ protocol=ddb-local
 aws-dynamodb-table=MyDDBTableName
 aws-dynamodb-override-endpoint=localhost:8000
 ```
+Lastely, define `license-key` in the config file as required (fill in your personal datomic pro starter license, or copy the wormbase license key).
+
 After defining the correct transactor properties file, start a local datomic transactor to the local DDB:
 ```bash
-~/datomic-pro/bin/transactor local-ddb-transactor.properties &
+~/datomic-pro/bin/transactor /abs/path/local-ddb-transactor.properties &
 ```
 
 
