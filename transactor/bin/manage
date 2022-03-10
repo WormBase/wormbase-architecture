@@ -534,7 +534,8 @@ def validate_template(ctx, cf_template_path):
 @atexit.register
 def clean_up():
     try:
-        os.remove(CommandContext.wb_dp_license_key_path)
+        #this was throwing an error when creating the frontend transactor
+        pass #os.remove(CommandContext.wb_dp_license_key_path)
     except IOError:
         pass
 
