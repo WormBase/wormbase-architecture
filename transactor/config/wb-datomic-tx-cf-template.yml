@@ -185,6 +185,8 @@ Mappings:
       Arch: 64h
     c4.xlarge:
       Arch: 64h
+    c5.large:
+      Arch: 64h
     c5.xlarge:
       Arch: 64h
     t2.small:
