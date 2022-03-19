@@ -47,6 +47,7 @@ source wb-cf-transactors/bin/activate
 In the same directory as this file you're reading:
 
 ```
+cd transactors
 pip install -r requirements.txt
 ```
 
