@@ -109,7 +109,7 @@ bin/manage $STACK_PARAM_FILE $CF_STACK_NAME \
 ##### Names DB (test env)
 
 ```bash
-DDB_TABLE="WSNames-test-14"
+DDB_TABLE="WSNames-test-15"
 CF_STACK_NAME="WBNamesTestTransactor"
 DATOMIC_VERSION="1.0.6165"
 DESIRED_CAPACITY=2  #Use 2 for failover
